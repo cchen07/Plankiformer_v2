@@ -1,3 +1,0 @@
-#!/bin/bash -l
-
-python3 convert_pixel.py -datapaths /home/EAWAG/chenchen/data/Zooplankton/train_data/splitting_20221212/0_train/ /home/EAWAG/chenchen/data/Zooplankton/train_data/splitting_20221212/0_test/ /home/EAWAG/chenchen/data/Zooplankton/test_data/zooformer_5000images/ /home/EAWAG/chenchen/data/Zooplankton/test_data/OOD1/ /home/EAWAG/chenchen/data/Zooplankton/test_data/OOD2/ /home/EAWAG/chenchen/data/Zooplankton/test_data/OOD3/ /home/EAWAG/chenchen/data/Zooplankton/test_data/OOD4/ /home/EAWAG/chenchen/data/Zooplankton/test_data/OOD5/ -dataset_labels Zoolake2_train Zoolake2_test Zoolake2_OOD Zoolake2_OOD1 Zoolake2_OOD2 Zoolake2_OOD3 Zoolake2_OOD4 Zoolake2_OOD5 -outpath /home/EAWAG/chenchen/out/dataset_out/Zooplankton/20230127/pixel/ -resized_length 64
