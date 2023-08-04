@@ -51,37 +51,37 @@ class import_and_train_model:
         num_classes = len(np.unique(classes))
 
         if train_main.params.architecture == 'deit':
-            self.model = timm.create_model('deit_base_distilled_patch16_224', pretrained=True,
+            self.model = timm.create_model('deit_base_distilled_patch16_224.fb_in1k', pretrained=True,
                                            num_classes=num_classes)
         elif train_main.params.architecture == 'efficientnetb2':
-            self.model = timm.create_model('tf_efficientnet_b2', pretrained=True,
+            self.model = timm.create_model('tf_efficientnet_b2.ns_jft_in1k', pretrained=True,
                                            num_classes=num_classes)
         elif train_main.params.architecture == 'efficientnetb5':
-            self.model = timm.create_model('tf_efficientnet_b5', pretrained=True,
+            self.model = timm.create_model('tf_efficientnet_b5.ns_jft_in1k', pretrained=True,
                                            num_classes=num_classes)
         elif train_main.params.architecture == 'efficientnetb6':
-            self.model = timm.create_model('tf_efficientnet_b6', pretrained=True,
+            self.model = timm.create_model('tf_efficientnet_b6.ns_jft_in1k', pretrained=True,
                                            num_classes=num_classes)
         elif train_main.params.architecture == 'efficientnetb7':
-            self.model = timm.create_model('tf_efficientnet_b7', pretrained=True,
+            self.model = timm.create_model('tf_efficientnet_b7.ns_jft_in1k', pretrained=True,
                                            num_classes=num_classes)
         elif train_main.params.architecture == 'densenet':
-            self.model = timm.create_model('densenet161', pretrained=True,
+            self.model = timm.create_model('densenet161.tv_in1k', pretrained=True,
                                            num_classes=num_classes)
         elif train_main.params.architecture == 'mobilenet':
-            self.model = timm.create_model('mobilenetv3_large_100_miil', pretrained=True,
+            self.model = timm.create_model('mobilenetv3_large_100.miil_in21k_ft_in1k', pretrained=True,
                                            num_classes=num_classes)
         elif train_main.params.architecture == 'inception':
-            self.model = timm.create_model('inception_v4', pretrained=True,
+            self.model = timm.create_model('inception_v4.tf_in1k', pretrained=True,
                                            num_classes=num_classes)
         elif train_main.params.architecture == 'vit':
-            self.model = timm.create_model('vit_base_patch16_224', pretrained=True,
+            self.model = timm.create_model('vit_base_patch16_224.augreg2_in21k_ft_in1k', pretrained=True,
                                            num_classes=num_classes)
         elif train_main.params.architecture == 'mae':
             self.model = timm.create_model('vit_base_patch16_224.mae', pretrained=True,
                                            num_classes=num_classes)
         elif train_main.params.architecture == 'swin':
-            self.model = timm.create_model('swin_base_patch4_window7_224', pretrained=True,
+            self.model = timm.create_model('swin_base_patch4_window7_224.ms_in22k_ft_in1k', pretrained=True,
                                            num_classes=num_classes)
         else:
             print('This model cannot be imported. Please check from the list of models')
