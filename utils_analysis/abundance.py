@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -33,21 +34,63 @@ def PlotAbundanceSep(datapaths, outpath, datapath_labels):
         
         # plot abundance
         ax = plt.subplot(1, 1, 1)
-        plt.figure(figsize=(7, 5))
+        plt.figure(figsize=(10, 7))
         plt.xlabel('Class')
         plt.ylabel('Number of images per class')
         ax.set_xlabel('Class')
         ax.set_ylabel('Abundance')
 
         for i in range(len(sorted_dict_class)):
-            plt.bar(sorted_dict_class[i][0], sorted_dict_class[i][1], log=True, color='g')
+            plt.bar(sorted_dict_class[i][0], sorted_dict_class[i][1], log=True, color='royalblue')
             # plt.xticks(rotation=90)
             plt.xticks(rotation=45, rotation_mode='anchor', ha='right')
 
         plt.tight_layout()
+        Path(outpath).mkdir(parents=True, exist_ok=True)
         plt.savefig(outpath + 'abundance_%s.png' % datapath_labels[j])
         plt.close()
         ax.clear()
+
+
+def PlotAbundance_with_test(datapaths, outpath, datapath_labels):
+    '''plot the abundance of datasets'''
+
+    print('-----------------Now plotting abundance distributions of each dataset.-----------------')
+
+    list_class_all = ['aphanizomenon', 'asplanchna', 'asterionella', 'bosmina', 'ceratium',
+                     'chaoborus', 'collotheca', 'conochilus', 'copepod_skins', 'cyclops', 'daphnia', 'daphnia_skins', 
+                     'diaphanosoma', 'diatom_chain', 'dinobryon', 'dirt', 'eudiaptomus', 'filament', 
+                     'fish', 'fragilaria', 'hydra', 'kellicottia', 'keratella_cochlearis', 'keratella_quadrata', 
+                     'leptodora', 'maybe_cyano', 'nauplius', 'paradileptus', 'polyarthra', 'rotifers', 
+                     'synchaeta', 'trichocerca', 'unknown', 'unknown_plankton', 'uroglena']
+    
+    df = pd.DataFrame(index=datapath_labels, columns=list_class_all)
+
+    for j, idatapath in enumerate(datapaths):
+        list_class = os.listdir(idatapath) # list of class names
+
+        # list of the numbers of images in each class
+        for iclass in list_class:
+            if os.path.exists(idatapath + '/%s/training_data/' % iclass):
+                n_image_class = len(os.listdir(idatapath + '/%s/training_data/' % iclass))
+            else:
+                n_image_class = len(os.listdir(idatapath + '/%s/' % iclass))
+
+            df.loc[datapath_labels[j], iclass] = n_image_class
+
+    df = df.div(df.sum(axis=1), axis=0)
+
+    # plt.figure(figsize=(10, 7))
+    # plt.xlabel('Abundance density')
+    # plt.ylabel('Datasets')
+
+    df.plot(figsize=(15, 10), kind='barh', stacked=True, legend=False, colormap='nipy_spectral', xlabel='Abundance density', ylabel='Datasets')
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), fancybox=True, shadow=True, ncol=5)
+
+    plt.tight_layout()
+    Path(outpath).mkdir(parents=True, exist_ok=True)
+    plt.savefig(outpath + 'abundance.png')
+    plt.close()
 
 
 
@@ -108,6 +151,11 @@ def PlotAbundance(datapaths, outpath, datapath_labels):
     y2 = df_abundance_sorted['dataset_2']
 
     abundance_distance = AbundanceDistance(y1, y2)
+
+    Path(outpath).mkdir(parents=True, exist_ok=True)
+
+    with open(outpath + 'Abundance_Distance_{}_{}.txt'.format(datapath_labels[0], datapath_labels[1]), 'a') as f:
+        f.write(f'\n Global Distance: {abundance_distance}\n')
 
     plt.bar(x1, y1, width=0.5, label=datapath_labels[0])
     plt.bar(x2, y2, width=0.5, label=datapath_labels[1])

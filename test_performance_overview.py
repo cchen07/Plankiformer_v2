@@ -1,18 +1,10 @@
 import os
+from pathlib import Path
 import argparse
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-
-parser = argparse.ArgumentParser(description='Generate an overview of test performance')
-parser.add_argument('-model_names', nargs='*', help='list of model names')
-# parser.add_argument('-dataset_names', nargs='*', help='list of test dataset names')
-parser.add_argument('-model_performance_paths', nargs='*', help='list of performance paths for each model')
-parser.add_argument('-outpath', help='path for saving the overview')
-parser.add_argument('-finetuned', type=int, help='0 for original, 1 for tuned, 2 for finetuned')
-parser.add_argument('-ensemble', type=int, help='0 for single model, 1 for ensembled model')
-parser.add_argument('-remove_0', choices=['yes', 'no'], default='no', help='remove 0 support classes or not')
-args = parser.parse_args()
+from scipy.stats import sem
 
 
 def plot_performance_overview(model_name, test_dataset, accuracy, f1_score, outpath, remove_0):
@@ -24,7 +16,7 @@ def plot_performance_overview(model_name, test_dataset, accuracy, f1_score, outp
     for i in range(len(model_name)):
         for j in range(len(test_dataset)):
             text = plt.text(j, i, format(accuracy[i, j], '.3f'), ha='center', va='center', color='black')
-    plt.imshow(accuracy, cmap='RdYlGn', vmin=0.3, vmax=1.0)
+    plt.imshow(accuracy, cmap='RdYlGn', vmin=0.5, vmax=1.0)
     plt.colorbar()
 
     plt.subplot(1, 2, 2)
@@ -38,6 +30,7 @@ def plot_performance_overview(model_name, test_dataset, accuracy, f1_score, outp
     plt.colorbar()
 
     plt.tight_layout()
+    Path(outpath).mkdir(parents=True, exist_ok=True)
     if remove_0 == 'no':
         plt.savefig(outpath + 'test_performance_overview.png', dpi=300)
     elif remove_0 == 'yes':
@@ -53,18 +46,21 @@ def read_test_report(test_report_file):
     return accuracy_value, f1_value
 
 
-def performance_matrix(model_performance_paths, finetuned, ensemble, remove_0):
+def performance_matrix(model_performance_paths, testsets, finetuned, ensemble, remove_0):
     n_model = len(model_performance_paths)
-    n_dataset = len(os.listdir(model_performance_paths[0]))
-    test_dataset = os.listdir(model_performance_paths[0])
-    test_dataset.sort()
+    # n_dataset = len(os.listdir(model_performance_paths[0]))
+    n_dataset = len(testsets)
+    # test_dataset = os.listdir(model_performance_paths[0])
+    test_dataset = testsets
+    # test_dataset.sort()
 
     accuracy = np.zeros([n_model, n_dataset])
     f1_score = np.zeros([n_model, n_dataset])
 
     for i, imodel_path in enumerate(model_performance_paths):
-        dataset_names = os.listdir(imodel_path)
-        dataset_names.sort()
+        # dataset_names = os.listdir(imodel_path)
+        dataset_names = testsets
+        # dataset_names.sort()
         for j, idataset in enumerate(dataset_names):
             test_report_path = imodel_path + '/' + idataset + '/'
 
@@ -124,6 +120,7 @@ def plot_performance_curve(model_name, test_dataset, accuracy, f1_score, outpath
     plt.legend()
 
     plt.tight_layout()
+    Path(outpath).mkdir(parents=True, exist_ok=True)
     if remove_0 == 'no':
         plt.savefig(outpath + 'test_performance_curves.png', dpi=300)
     elif remove_0 == 'yes':
@@ -131,10 +128,54 @@ def plot_performance_curve(model_name, test_dataset, accuracy, f1_score, outpath
     plt.close()
 
 
+def plot_performance(aug_types, test_dataset, accuracy, f1_score, outpath, remove_0):
+    n_aug = len(aug_types)
+    n_model_aug = len(accuracy)/n_aug
+    plt.figure(figsize=(15, 7))
+    plt.subplot(1, 2, 1)
+    plt.xticks(np.arange(len(test_dataset)), labels=test_dataset, rotation=45, rotation_mode='anchor', ha='right')
+    plt.title('Accuracy')
+    for i, aug_type in enumerate(aug_types):
+        accuracy_aug_type = accuracy[int(i*n_model_aug):int((i+1)*n_model_aug)]
+        mean_accuracy = np.mean(accuracy_aug_type, axis=0)
+        sem_accuracy = sem(accuracy_aug_type, axis=0)
+        plt.errorbar(x=np.arange(len(test_dataset)), y=mean_accuracy, yerr=sem_accuracy, fmt='s', capsize=5, label=aug_type)
+    plt.legend()
+
+    plt.subplot(1, 2, 2)
+    plt.xticks(np.arange(len(test_dataset)), labels=test_dataset, rotation=45, rotation_mode='anchor', ha='right')
+    plt.title('F1-score')
+    for i, aug_type in enumerate(aug_types):
+        f1_aug_type = f1_score[int(i*n_model_aug):int((i+1)*n_model_aug)]
+        mean_f1 = np.mean(f1_aug_type, axis=0)
+        sem_f1 = sem(f1_aug_type, axis=0)
+        plt.errorbar(x=np.arange(len(test_dataset)), y=mean_f1, yerr=sem_f1, fmt='s', capsize=5, label=aug_type)
+    plt.legend()
+
+    plt.tight_layout()
+    Path(outpath).mkdir(parents=True, exist_ok=True)
+    if remove_0 == 'no':
+        plt.savefig(outpath + 'test_performance.png', dpi=300)
+    elif remove_0 == 'yes':
+        plt.savefig(outpath + 'test_performance_rm_0.png', dpi=300)
+    plt.close()
+
+
+parser = argparse.ArgumentParser(description='Generate an overview of test performance')
+parser.add_argument('-model_names', nargs='*', help='list of model names')
+parser.add_argument('-aug_types', nargs='*', help='list of augmentation types')
+parser.add_argument('-testsets', nargs='*', help='list of test datasets')
+parser.add_argument('-model_performance_paths', nargs='*', help='list of performance paths for each model')
+parser.add_argument('-outpath', help='path for saving the overview')
+parser.add_argument('-finetuned', type=int, help='0 for original, 1 for tuned, 2 for finetuned')
+parser.add_argument('-ensemble', type=int, help='0 for single model, 1 for ensembled model')
+parser.add_argument('-remove_0', choices=['yes', 'no'], default='no', help='remove 0 support classes or not')
+args = parser.parse_args()
+
 if __name__ == '__main__':
-    accuracy, f1_score, test_dataset = performance_matrix(args.model_performance_paths, args.finetuned, args.ensemble, args.remove_0)
+    accuracy, f1_score, test_dataset = performance_matrix(args.model_performance_paths, args.testsets, args.finetuned, args.ensemble, args.remove_0)
     model_name = args.model_names
     outpath = args.outpath
     plot_performance_overview(model_name, test_dataset, accuracy, f1_score, outpath, args.remove_0)
     plot_performance_curve(model_name, test_dataset, accuracy, f1_score, outpath, args.remove_0)
-
+    plot_performance(args.aug_types, test_dataset, accuracy, f1_score, outpath, args.remove_0)

@@ -41,59 +41,59 @@ def PlotFeatureDistribution_PCA(PCA_files_feature, outpath, selected_components_
             ax.set_xlabel(ipc + ' (normalized)')
             ax.set_ylabel('Density')
 
-            # component_1 = df_pca_1_class[ipc]
-            # component_2 = df_pca_2_class[ipc]
-            # components = [component_1, component_2]
+            component_1 = df_pca_1_class[ipc]
+            component_2 = df_pca_2_class[ipc]
+            components = [component_1, component_2]
 
-            # min_bin = np.min([min(component_1), min(component_2)])
-            # max_bin = np.max([max(component_1), max(component_2)])
-
-            # normalized_component = np.divide((np.array(components, dtype=object) - min_bin), (max_bin - min_bin))
-
-            # if adaptive_bins == 'yes':
-            #     # n_bins_feature = int(len(component_1) / 5)
-            #     n_bins_feature = np.min([20, int(len(component_1) / 5), int(len(component_2) / 3)])
-            #     n_bins_feature = np.max([5, n_bins_feature])
-
-            # histogram = plt.hist(normalized_component, histtype='stepfilled', bins=n_bins_feature, range=(0, 1), density=True, alpha=0.5, label=data_labels)
-            
-            
-            
-            
-            
-            component_1 = np.divide(df_pca_1_class[ipc] - df_pca_1_class[ipc].mean(), df_pca_1_class[ipc].std()).values
-            component_2 = np.divide(df_pca_2_class[ipc] - df_pca_1_class[ipc].mean(), df_pca_1_class[ipc].std()).values
-
-            log_component_1, log_component_2 = np.array([]), np.array([])
-            for i in component_1:
-                if i >= 0:
-                    log_i = np.emath.logn(10, 1 + i)
-                else:
-                    log_i = -np.emath.logn(10, 1 - i)
-                log_component_1 = np.append(log_component_1, log_i)
-            for i in component_2:
-                if i >= 0:
-                    log_i = np.emath.logn(10, 1 + i)
-                else:
-                    log_i = -np.emath.logn(10, 1 - i)
-                log_component_2 = np.append(log_component_2, log_i)
-
-            # log_component_1 = np.tanh(component_1)
-            # log_component_2 = np.tanh(component_2)
-
-            components = [log_component_1, log_component_2]
-
-            min_bin = np.min([min(log_component_1), min(log_component_2)])
-            max_bin = np.max([max(log_component_1), max(log_component_2)])
+            min_bin = np.min([min(component_1), min(component_2)])
+            max_bin = np.max([max(component_1), max(component_2)])
 
             normalized_component = np.divide((np.array(components, dtype=object) - min_bin), (max_bin - min_bin))
 
             if adaptive_bins == 'yes':
-                # n_bins_feature = int(len(log_component_1) / 5)
-                n_bins_feature = np.min([20, int(len(log_component_1) / 5), int(len(log_component_2) / 3)])
+                # n_bins_feature = int(len(component_1) / 5)
+                n_bins_feature = np.min([20, int(len(component_1) / 5), int(len(component_2) / 3)])
                 n_bins_feature = np.max([5, n_bins_feature])
 
             histogram = plt.hist(normalized_component, histtype='stepfilled', bins=n_bins_feature, range=(0, 1), density=True, alpha=0.5, label=data_labels)
+            
+            
+            
+            
+            
+            # component_1 = np.divide(df_pca_1_class[ipc] - df_pca_1_class[ipc].mean(), df_pca_1_class[ipc].std()).values
+            # component_2 = np.divide(df_pca_2_class[ipc] - df_pca_1_class[ipc].mean(), df_pca_1_class[ipc].std()).values
+
+            # log_component_1, log_component_2 = np.array([]), np.array([])
+            # for i in component_1:
+            #     if i >= 0:
+            #         log_i = np.emath.logn(10, 1 + i)
+            #     else:
+            #         log_i = -np.emath.logn(10, 1 - i)
+            #     log_component_1 = np.append(log_component_1, log_i)
+            # for i in component_2:
+            #     if i >= 0:
+            #         log_i = np.emath.logn(10, 1 + i)
+            #     else:
+            #         log_i = -np.emath.logn(10, 1 - i)
+            #     log_component_2 = np.append(log_component_2, log_i)
+
+            # # log_component_1 = np.tanh(component_1)
+            # # log_component_2 = np.tanh(component_2)
+
+            # components = [log_component_1, log_component_2]
+
+            # min_bin = np.min([min(log_component_1), min(log_component_2)])
+            # max_bin = np.max([max(log_component_1), max(log_component_2)])
+
+            # normalized_component = np.divide((np.array(components, dtype=object) - min_bin), (max_bin - min_bin))
+
+            # if adaptive_bins == 'yes':
+            #     # n_bins_feature = int(len(log_component_1) / 5)
+            #     n_bins_feature = np.min([20, int(len(log_component_1) / 5), int(len(log_component_2) / 3)])
+            #     n_bins_feature = np.max([5, n_bins_feature])
+
+            # histogram = plt.hist(normalized_component, histtype='stepfilled', bins=n_bins_feature, range=(0, 1), density=True, alpha=0.5, label=data_labels)
             
 
             
@@ -247,60 +247,60 @@ def GlobalDistance_feature(PCA_files_feature, outpath, n_bins_feature, adaptive_
 
         list_distance = []
         for ipc in list_principal_components:
-            # component_1 = df_pca_1_class[ipc]
-            # component_2 = df_pca_2_class[ipc]
-            # components = [component_1, component_2]
+            component_1 = df_pca_1_class[ipc]
+            component_2 = df_pca_2_class[ipc]
+            components = [component_1, component_2]
 
-            # min_bin = np.min([min(component_1), min(component_2)])
-            # max_bin = np.max([max(component_1), max(component_2)])
-
-            # normalized_component = np.divide((np.array(components, dtype=object) - min_bin), (max_bin - min_bin))
-
-            # if adaptive_bins == 'yes':
-            #     # n_bins_feature = int(len(component_1) / 5)
-            #     n_bins_feature = np.min([20, int(len(component_1) / 5), int(len(component_2) / 3)])
-            #     n_bins_feature = np.max([5, n_bins_feature])
-
-            # histogram_1 = np.histogram(normalized_component[0], bins=n_bins_feature, range=(0, 1), density=True)
-            # histogram_2 = np.histogram(normalized_component[1], bins=n_bins_feature, range=(0, 1), density=True)
-            
-            
-            
-            
-            component_1 = np.divide(df_pca_1_class[ipc] - df_pca_1_class[ipc].mean(), df_pca_1_class[ipc].std()).values
-            component_2 = np.divide(df_pca_2_class[ipc] - df_pca_1_class[ipc].mean(), df_pca_1_class[ipc].std()).values
-
-            log_component_1, log_component_2 = np.array([]), np.array([])
-            for i in component_1:
-                if i >= 0:
-                    log_i = np.emath.logn(10, 1 + i)
-                else:
-                    log_i = -np.emath.logn(10, 1 - i)
-                log_component_1 = np.append(log_component_1, log_i)
-            for i in component_2:
-                if i >= 0:
-                    log_i = np.emath.logn(10, 1 + i)
-                else:
-                    log_i = -np.emath.logn(10, 1 - i)
-                log_component_2 = np.append(log_component_2, log_i)
-
-            # log_component_1 = np.tanh(component_1)
-            # log_component_2 = np.tanh(component_2)
-
-            components = [log_component_1, log_component_2]
-
-            min_bin = np.min([min(log_component_1), min(log_component_2)])
-            max_bin = np.max([max(log_component_1), max(log_component_2)])
+            min_bin = np.min([min(component_1), min(component_2)])
+            max_bin = np.max([max(component_1), max(component_2)])
 
             normalized_component = np.divide((np.array(components, dtype=object) - min_bin), (max_bin - min_bin))
 
             if adaptive_bins == 'yes':
-                # n_bins_feature = int(len(log_component_1) / 5)
-                n_bins_feature = np.min([20, int(len(log_component_1) / 5), int(len(log_component_2) / 3)])
+                # n_bins_feature = int(len(component_1) / 5)
+                n_bins_feature = np.min([20, int(len(component_1) / 5), int(len(component_2) / 3)])
                 n_bins_feature = np.max([5, n_bins_feature])
 
             histogram_1 = np.histogram(normalized_component[0], bins=n_bins_feature, range=(0, 1), density=True)
             histogram_2 = np.histogram(normalized_component[1], bins=n_bins_feature, range=(0, 1), density=True)
+            
+            
+            
+            
+            # component_1 = np.divide(df_pca_1_class[ipc] - df_pca_1_class[ipc].mean(), df_pca_1_class[ipc].std()).values
+            # component_2 = np.divide(df_pca_2_class[ipc] - df_pca_1_class[ipc].mean(), df_pca_1_class[ipc].std()).values
+
+            # log_component_1, log_component_2 = np.array([]), np.array([])
+            # for i in component_1:
+            #     if i >= 0:
+            #         log_i = np.emath.logn(10, 1 + i)
+            #     else:
+            #         log_i = -np.emath.logn(10, 1 - i)
+            #     log_component_1 = np.append(log_component_1, log_i)
+            # for i in component_2:
+            #     if i >= 0:
+            #         log_i = np.emath.logn(10, 1 + i)
+            #     else:
+            #         log_i = -np.emath.logn(10, 1 - i)
+            #     log_component_2 = np.append(log_component_2, log_i)
+
+            # # log_component_1 = np.tanh(component_1)
+            # # log_component_2 = np.tanh(component_2)
+
+            # components = [log_component_1, log_component_2]
+
+            # min_bin = np.min([min(log_component_1), min(log_component_2)])
+            # max_bin = np.max([max(log_component_1), max(log_component_2)])
+
+            # normalized_component = np.divide((np.array(components, dtype=object) - min_bin), (max_bin - min_bin))
+
+            # if adaptive_bins == 'yes':
+            #     # n_bins_feature = int(len(log_component_1) / 5)
+            #     n_bins_feature = np.min([20, int(len(log_component_1) / 5), int(len(log_component_2) / 3)])
+            #     n_bins_feature = np.max([5, n_bins_feature])
+
+            # histogram_1 = np.histogram(normalized_component[0], bins=n_bins_feature, range=(0, 1), density=True)
+            # histogram_2 = np.histogram(normalized_component[1], bins=n_bins_feature, range=(0, 1), density=True)
 
             
             
@@ -356,37 +356,60 @@ def GlobalDistance_feature_x(PCA_files_feature, outpath, n_bins_feature, adaptiv
     list_distance = []
 
     for ipc in list_principal_components:
+        component_1 = df_pca_1[ipc]
+        component_2 = df_pca_2[ipc]
+        components = [component_1, component_2]
 
-        component_1 = np.divide(df_pca_1[ipc] - df_pca_1[ipc].mean(), df_pca_1[ipc].std()).values
-        component_2 = np.divide(df_pca_2[ipc] - df_pca_1[ipc].mean(), df_pca_1[ipc].std()).values
-
-        log_component_1, log_component_2 = np.array([]), np.array([])
-        for i in component_1:
-            if i >= 0:
-                log_i = np.emath.logn(10, 1 + i)
-            else:
-                log_i = -np.emath.logn(10, 1 - i)
-            log_component_1 = np.append(log_component_1, log_i)
-        for i in component_2:
-            if i >= 0:
-                log_i = np.emath.logn(10, 1 + i)
-            else:
-                log_i = -np.emath.logn(10, 1 - i)
-            log_component_2 = np.append(log_component_2, log_i)
-
-        components = [log_component_1, log_component_2]
-
-        min_bin = np.min([min(log_component_1), min(log_component_2)])
-        max_bin = np.max([max(log_component_1), max(log_component_2)])
+        min_bin = np.min([min(component_1), min(component_2)])
+        max_bin = np.max([max(component_1), max(component_2)])
 
         normalized_component = np.divide((np.array(components, dtype=object) - min_bin), (max_bin - min_bin))
 
         if adaptive_bins == 'yes':
-            n_bins_feature = np.min([20, int(len(log_component_1) / 5), int(len(log_component_2) / 3)])
+            # n_bins_feature = int(len(component_1) / 5)
+            n_bins_feature = np.min([20, int(len(component_1) / 5), int(len(component_2) / 3)])
             n_bins_feature = np.max([5, n_bins_feature])
 
         histogram_1 = np.histogram(normalized_component[0], bins=n_bins_feature, range=(0, 1), density=True)
         histogram_2 = np.histogram(normalized_component[1], bins=n_bins_feature, range=(0, 1), density=True)
+
+
+
+
+        # component_1 = np.divide(df_pca_1[ipc] - df_pca_1[ipc].mean(), df_pca_1[ipc].std()).values
+        # component_2 = np.divide(df_pca_2[ipc] - df_pca_1[ipc].mean(), df_pca_1[ipc].std()).values
+
+        # log_component_1, log_component_2 = np.array([]), np.array([])
+        # for i in component_1:
+        #     if i >= 0:
+        #         log_i = np.emath.logn(10, 1 + i)
+        #     else:
+        #         log_i = -np.emath.logn(10, 1 - i)
+        #     log_component_1 = np.append(log_component_1, log_i)
+        # for i in component_2:
+        #     if i >= 0:
+        #         log_i = np.emath.logn(10, 1 + i)
+        #     else:
+        #         log_i = -np.emath.logn(10, 1 - i)
+        #     log_component_2 = np.append(log_component_2, log_i)
+
+        # components = [log_component_1, log_component_2]
+
+        # min_bin = np.min([min(log_component_1), min(log_component_2)])
+        # max_bin = np.max([max(log_component_1), max(log_component_2)])
+
+        # normalized_component = np.divide((np.array(components, dtype=object) - min_bin), (max_bin - min_bin))
+
+        # if adaptive_bins == 'yes':
+        #     n_bins_feature = np.min([20, int(len(log_component_1) / 5), int(len(log_component_2) / 3)])
+        #     n_bins_feature = np.max([5, n_bins_feature])
+
+        # histogram_1 = np.histogram(normalized_component[0], bins=n_bins_feature, range=(0, 1), density=True)
+        # histogram_2 = np.histogram(normalized_component[1], bins=n_bins_feature, range=(0, 1), density=True)
+
+
+
+
 
         density_1 = histogram_1[0]
         density_2 = histogram_2[0]

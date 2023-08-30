@@ -4,6 +4,7 @@ import time
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 
 
 
@@ -45,7 +46,7 @@ def PlotSamplingDate(train_datapath, outpath):
     plt.ylabel('Number of images')
     # plt.title('Image sampling date in train dataset')
 
-    plt.plot(df_full['date'], df_full['count'], color='r', label='number of sampled images')
+    plt.plot(df_full['date'], df_full['count'], color='coral', label='number of sampled images')
     plt.yscale('log')
     plt.grid(axis='y')
     # plt.legend()
@@ -54,7 +55,59 @@ def PlotSamplingDate(train_datapath, outpath):
     plt.close()
     ax.clear()
 
+def PlotSamplingDate_with_test(datapaths, outpath):
 
+    print('-----------------Now plotting sampling date of training set.-----------------')
+
+    # ax = plt.subplot(1, 1, 1)
+    plt.figure(figsize=(10, 7))
+    plt.xlabel('Date')
+    plt.ylabel('Number of images')
+    # plt.title('Image sampling date in train dataset')
+
+    c = 'royalblue'
+    for idatapth in datapaths:
+
+        list_class = os.listdir(idatapth) # list of class names
+
+        list_image = []
+        # list of all image names in the train dataset
+        for iclass in list_class:
+            for img in os.listdir(idatapth + '/%s/' % iclass):
+                list_image.append(img)
+
+        list_time = []
+        list_date = []
+        for img in list_image:
+            if img == 'Thumbs.db':
+                continue
+
+            timestamp = int(img[15:25])
+            localtime = time.localtime(timestamp)        
+            t = time.strftime('%Y-%m-%d %H:%M:%S', localtime)
+            date = time.strftime('%Y-%m-%d', localtime)
+            list_time.append(t)
+            list_date.append(date)
+        
+        list.sort(list_date)
+
+        df = pd.DataFrame({'date': pd.to_datetime(np.unique(list_date)), 'count': pd.value_counts(list_date).sort_index()})
+        date_range = pd.date_range(start=df['date'].min(), end=df['date'].max(), freq='D')
+
+        df_full = df.set_index('date').reindex(date_range).fillna(0).rename_axis('date').reset_index() # create a full time range and fill the NA with 0
+        
+        # plt.scatter(df_full['date'], df_full['count'], color=c, label='number of sampled images')
+        plt.vlines(df_full['date'], ymin=0, ymax=df_full['count'], color=c)
+        c = 'coral'
+
+    plt.yscale('log')
+    plt.ylim(bottom=1)
+    plt.grid(axis='y')
+    plt.legend(handles=[mpatches.Patch(color='royalblue', label='Zoolake2'), mpatches.Patch(color='coral', label='OOD test cells')], loc='upper left')
+    plt.tight_layout()
+    plt.savefig(outpath + 'image_date.png')
+    plt.close()
+    # ax.clear()
 
 def PlotSamplingDateEachClass(train_datapath, outpath):
 

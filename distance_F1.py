@@ -1106,7 +1106,7 @@ def plot_distance_F1_drop(testsets, distance_dfs, train_F1_txt_path, F1_txt_path
         plt.errorbar(distance_mean, F1_drop_mean, xerr=distance_sem, yerr=F1_drop_sem, fmt='s', elinewidth=1, capthick=1, capsize=3, c=np.array([c]), alpha=0.3)
         # plt.errorbar(distance_mean, F1_drop_mean, fmt='s', elinewidth=1, capthick=1, capsize=3, c=np.array([c]), alpha=0.3)
 #         plt.plot(distance_mean, F1_drop_mean_pred, color=np.array([c]), label=ifeature)
-        if a > 1:
+        if a > 0.8:
             plt.axline((distance_mean[0], F1_drop_mean_pred[0]), slope=a, color=np.array([c]), label=ifeature, linewidth=3)
         else:
             plt.axline((distance_mean[0], F1_drop_mean_pred[0]), slope=a, color=np.array([c]), label=ifeature, linewidth=0.8)
@@ -1198,7 +1198,7 @@ def plot_distance_F1(testsets, distance_dfs, train_F1_txt_path, F1_txt_paths, ou
         plt.errorbar(distance_mean, F1_mean, xerr=distance_sem, yerr=F1_sem, fmt='s', elinewidth=1, capthick=1, capsize=3, c=np.array([c]), alpha=0.3)
         # plt.errorbar(distance_mean, F1_mean, fmt='s', elinewidth=1, capthick=1, capsize=3, c=np.array([c]), alpha=0.3)
 #         plt.plot(distance_mean, F1_mean_pred, color=np.array([c]), label=ifeature)
-        if a < -1:
+        if a < -0.8:
             plt.axline((distance_mean[0], F1_mean_pred[0]), slope=a, color=np.array([c]), label=ifeature, linewidth=3)
         else:
             plt.axline((distance_mean[0], F1_mean_pred[0]), slope=a, color=np.array([c]), label=ifeature, linewidth=0.8)
@@ -1284,7 +1284,7 @@ def plot_distance_F1_drop_per_class_per_component(testsets, distance_dfs, train_
             df_slopes.loc[iclass, ifeature] = a
             
             plt.scatter(distance_mean, F1_drop_mean, c=np.array([c]), alpha=0.3)
-            if a > 1:
+            if a > 0.8:
                 plt.axline((distance_mean[0], F1_drop_mean_pred[0]), slope=a, color=np.array([c]), label=ifeature, linewidth=3)
             else:
                 plt.axline((distance_mean[0], F1_drop_mean_pred[0]), slope=a, color=np.array([c]), label=ifeature, linewidth=0.8)
@@ -1388,7 +1388,7 @@ def plot_distance_F1_per_class_per_component(testsets, distance_dfs, train_F1_tx
             df_slopes.loc[iclass, ifeature] = a
             
             plt.scatter(distance_mean, F1_mean, c=np.array([c]), alpha=0.3)
-            if a < -1:
+            if a < -0.8:
                 plt.axline((distance_mean[0], F1_mean_pred[0]), slope=a, color=np.array([c]), label=ifeature, linewidth=3)
             else:
                 plt.axline((distance_mean[0], F1_mean_pred[0]), slope=a, color=np.array([c]), label=ifeature, linewidth=0.8)
@@ -1468,6 +1468,47 @@ def plot_distance_F1_testset_x(testsets, distance_txt_paths, train_F1_txt_path, 
     plt.close()
 
 
+def plot_distance_F1_testset_y(testsets, distance_txt_paths, train_F1_txt_path, F1_txt_paths, outpath, model):    
+    print('------------plotting global correlation of abundance distance and F1------------')
+
+    df = pd.DataFrame(columns=['distance', 'F1', 'F1_drop'], index=testsets)
+    for i, itestset in enumerate(testsets):
+        df_distance = pd.read_csv(distance_txt_paths[i], header=None)
+        distance = float(df_distance.iloc[0, 0][18:])
+        df_F1 = pd.read_csv(F1_txt_paths[i], header=None)
+        F1 = float(df_F1.iloc[3, 0])
+        df_F1_train = pd.read_csv(train_F1_txt_path, header=None)
+        F1_train = float(df_F1_train.iloc[3, 0])
+        F1_drop = 1 - np.divide(F1, F1_train)
+        df.loc[itestset] = [distance, F1, F1_drop]
+
+    plt.figure(figsize=(6, 6))
+    plt.subplot(1, 1, 1)
+    plt.xlabel('Distance to training set')
+    plt.ylabel('F1 drop ratio')
+    random.seed(100)
+    colors = distinctipy.get_colors(len(testsets), pastel_factor=0.7)
+    for x, y, c, l in zip(df.distance, df.F1_drop, colors, testsets):
+        plt.scatter(x, y, c=np.array([c]), label=l)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), fancybox=True, shadow=True, ncol=5)
+    plt.tight_layout()
+    Path(outpath).mkdir(parents=True, exist_ok=True)
+    plt.savefig(outpath + model + '_abundance_distance_F1_drop_testset_err.png', dpi=300)
+    plt.close()
+
+    plt.figure(figsize=(6, 6))
+    plt.subplot(1, 1, 1)
+    plt.xlabel('Distance to training set')
+    plt.ylabel('F1-score')
+    for x, y, c, l in zip(df.distance, df.F1, colors, testsets):
+        plt.scatter(x, y, c=np.array([c]), label=l)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), fancybox=True, shadow=True, ncol=5)
+    plt.tight_layout()
+    Path(outpath).mkdir(parents=True, exist_ok=True)
+    plt.savefig(outpath + model + '_abundance_distance_F1_testset_err.png', dpi=300)
+    plt.close()
+
+
 def plot_distance_F1_x(testsets, distance_dfs, train_F1_txt_path, F1_txt_paths, outpath, model, feature_or_pixel, PCA, distance_type):
     print('------------plotting correlation of distance and F1 per component (PCA: {}, distance: {})------------'.format(PCA, distance_type))
     
@@ -1497,7 +1538,7 @@ def plot_distance_F1_x(testsets, distance_dfs, train_F1_txt_path, F1_txt_paths, 
         a = params[0]
         b = params[1]
         F1_drop_pred = a * np.array(df[ifeature]) + b
-        if a > 1:
+        if a > 0.8:
             plt.axline((df[ifeature][0], F1_drop_pred[0]), slope=a, color=np.array([c]), label=ifeature, linewidth=3)
         else:
             plt.axline((df[ifeature][0], F1_drop_pred[0]), slope=a, color=np.array([c]), label=ifeature, linewidth=0.8)
@@ -1519,7 +1560,7 @@ def plot_distance_F1_x(testsets, distance_dfs, train_F1_txt_path, F1_txt_paths, 
         a = params[0]
         b = params[1]
         F1_pred = a * np.array(df[ifeature]) + b
-        if a < -1:
+        if a < -0.8:
             plt.axline((df[ifeature][0], F1_pred[0]), slope=a, color=np.array([c]), label=ifeature, linewidth=3)
         else:
             plt.axline((df[ifeature][0], F1_pred[0]), slope=a, color=np.array([c]), label=ifeature, linewidth=0.8)
@@ -1546,34 +1587,38 @@ parser.add_argument('-threshold', type=int, default=0, help='threshold of image 
 parser.add_argument('-distance_type', choices=['Hellinger', 'Wasserstein', 'KL', 'Theta', 'Chi', 'I', 'Imax', 'Imagewise', 'Mahalanobis'], help='type of distribution distance')
 parser.add_argument('-class_filter', choices=['yes', 'no'], help='whether to filter out less important classes')
 parser.add_argument('-global_x', choices=['yes', 'no'], default='no', help='PCA on data over all classes or not')
+parser.add_argument('-abundance', choices=['yes', 'no'], default='no', help='analysis on abundance distance or not')
 args = parser.parse_args()
 
 if __name__ == '__main__':
-    if args.global_x == 'no':
-        # plot_distance_F1_scatter(args.testsets, args.distance_txt_paths, args.F1_txt_paths, args.outpath, args.model, args.feature_or_pixel, args.PCA, args.threshold, args.distance_type)
-        # plot_distance(args.testsets, args.distance_txt_paths, args.outpath, args.feature_or_pixel, args.PCA, args.threshold, args.distance_type)
-        # plot_distance_F1_err(args.testsets, args.distance_txt_paths, args.F1_txt_paths, args.outpath, args.model, args.feature_or_pixel, args.PCA, args.threshold, args.distance_type)
-        plot_distance_F1_testset(args.testsets, args.distance_txt_paths, args.F1_txt_paths, args.outpath, args.model, args.feature_or_pixel, args.PCA, args.threshold, args.distance_type, args.class_filter)
-        plot_distance_F1_class(args.testsets, args.distance_txt_paths, args.F1_txt_paths, args.outpath, args.model, args.feature_or_pixel, args.PCA, args.threshold, args.distance_type, args.class_filter)
-        plot_distance_F1_drop_testset(args.testsets, args.distance_txt_paths, args.train_F1_txt_path, args.F1_txt_paths, args.outpath, args.model, args.feature_or_pixel, args.PCA, args.threshold, args.distance_type, args.class_filter)
-        plot_distance_F1_drop_class(args.testsets, args.distance_txt_paths, args.train_F1_txt_path, args.F1_txt_paths, args.outpath, args.model, args.feature_or_pixel, args.PCA, args.threshold, args.distance_type, args.class_filter)
+    if args.abundance == 'yes':
+        plot_distance_F1_testset_y(args.testsets, args.distance_txt_paths, args.train_F1_txt_path, args.F1_txt_paths, args.outpath, args.model)
+    elif args.abundance == 'no':
+        if args.global_x == 'no':
+            # plot_distance_F1_scatter(args.testsets, args.distance_txt_paths, args.F1_txt_paths, args.outpath, args.model, args.feature_or_pixel, args.PCA, args.threshold, args.distance_type)
+            # plot_distance(args.testsets, args.distance_txt_paths, args.outpath, args.feature_or_pixel, args.PCA, args.threshold, args.distance_type)
+            # plot_distance_F1_err(args.testsets, args.distance_txt_paths, args.F1_txt_paths, args.outpath, args.model, args.feature_or_pixel, args.PCA, args.threshold, args.distance_type)
+            plot_distance_F1_testset(args.testsets, args.distance_txt_paths, args.F1_txt_paths, args.outpath, args.model, args.feature_or_pixel, args.PCA, args.threshold, args.distance_type, args.class_filter)
+            plot_distance_F1_class(args.testsets, args.distance_txt_paths, args.F1_txt_paths, args.outpath, args.model, args.feature_or_pixel, args.PCA, args.threshold, args.distance_type, args.class_filter)
+            plot_distance_F1_drop_testset(args.testsets, args.distance_txt_paths, args.train_F1_txt_path, args.F1_txt_paths, args.outpath, args.model, args.feature_or_pixel, args.PCA, args.threshold, args.distance_type, args.class_filter)
+            plot_distance_F1_drop_class(args.testsets, args.distance_txt_paths, args.train_F1_txt_path, args.F1_txt_paths, args.outpath, args.model, args.feature_or_pixel, args.PCA, args.threshold, args.distance_type, args.class_filter)
 
-        if args.PCA == 'no':
-            distance_dfs = []
-            for i in args.distance_class_xlsx_paths:
-                df_distance = pd.read_excel(i, index_col=0)
-                distance_dfs.append(df_distance)
-            plot_distance_F1(args.testsets, distance_dfs, args.train_F1_txt_path, args.F1_txt_paths, args.outpath, args.model, args.feature_or_pixel, args.PCA, args.threshold, args.distance_type, args.class_filter)
-            plot_distance_F1_drop(args.testsets, distance_dfs, args.train_F1_txt_path, args.F1_txt_paths, args.outpath, args.model, args.feature_or_pixel, args.PCA, args.threshold, args.distance_type, args.class_filter)
-            plot_distance_F1_per_class_per_component(args.testsets, distance_dfs, args.train_F1_txt_path, args.F1_txt_paths, args.outpath, args.model, args.feature_or_pixel, args.PCA, args.threshold, args.distance_type, args.class_filter)
-            plot_distance_F1_drop_per_class_per_component(args.testsets, distance_dfs, args.train_F1_txt_path, args.F1_txt_paths, args.outpath, args.model, args.feature_or_pixel, args.PCA, args.threshold, args.distance_type, args.class_filter)
+            if args.PCA == 'no':
+                distance_dfs = []
+                for i in args.distance_class_xlsx_paths:
+                    df_distance = pd.read_excel(i, index_col=0)
+                    distance_dfs.append(df_distance)
+                plot_distance_F1(args.testsets, distance_dfs, args.train_F1_txt_path, args.F1_txt_paths, args.outpath, args.model, args.feature_or_pixel, args.PCA, args.threshold, args.distance_type, args.class_filter)
+                plot_distance_F1_drop(args.testsets, distance_dfs, args.train_F1_txt_path, args.F1_txt_paths, args.outpath, args.model, args.feature_or_pixel, args.PCA, args.threshold, args.distance_type, args.class_filter)
+                plot_distance_F1_per_class_per_component(args.testsets, distance_dfs, args.train_F1_txt_path, args.F1_txt_paths, args.outpath, args.model, args.feature_or_pixel, args.PCA, args.threshold, args.distance_type, args.class_filter)
+                plot_distance_F1_drop_per_class_per_component(args.testsets, distance_dfs, args.train_F1_txt_path, args.F1_txt_paths, args.outpath, args.model, args.feature_or_pixel, args.PCA, args.threshold, args.distance_type, args.class_filter)
 
-    elif args.global_x == 'yes':
-        if args.PCA == 'yes':
-            plot_distance_F1_testset_x(args.testsets, args.distance_txt_paths, args.train_F1_txt_path, args.F1_txt_paths, args.outpath, args.model, args.feature_or_pixel, args.PCA, args.distance_type)
-        elif args.PCA == 'no':
-            distance_dfs = []
-            for i in args.distance_class_xlsx_paths:
-                df_distance = pd.read_excel(i, index_col=0)
-                distance_dfs.append(df_distance)
-            plot_distance_F1_x(args.testsets, distance_dfs, args.train_F1_txt_path, args.F1_txt_paths, args.outpath, args.model, args.feature_or_pixel, args.PCA, args.distance_type)
+        elif args.global_x == 'yes':
+            if args.PCA == 'yes':
+                plot_distance_F1_testset_x(args.testsets, args.distance_txt_paths, args.train_F1_txt_path, args.F1_txt_paths, args.outpath, args.model, args.feature_or_pixel, args.PCA, args.distance_type)
+            elif args.PCA == 'no':
+                distance_dfs = []
+                for i in args.distance_class_xlsx_paths:
+                    df_distance = pd.read_excel(i, index_col=0)
+                    distance_dfs.append(df_distance)
+                plot_distance_F1_x(args.testsets, distance_dfs, args.train_F1_txt_path, args.F1_txt_paths, args.outpath, args.model, args.feature_or_pixel, args.PCA, args.distance_type)

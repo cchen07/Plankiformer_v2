@@ -44,10 +44,12 @@ args = parser.parse_args()
 
 if __name__ == '__main__':
 
-    # sdate.PlotSamplingDate(args.train_datapath, args.outpath)
-    # sdate.PlotSamplingDateEachClass(args.train_datapath, args.outpath)
-    # abundance.PlotAbundance(args.datapaths, args.outpath, args.datapath_labels)
+    # # sdate.PlotSamplingDate(args.train_datapath, args.outpath)
+    # # sdate.PlotSamplingDateEachClass(args.train_datapath, args.outpath)
+    # sdate.PlotSamplingDate_with_test(args.datapaths, args.outpath)
+    # # abundance.PlotAbundance(args.datapaths, args.outpath, args.datapath_labels)
     # abundance.PlotAbundanceSep(args.datapaths, args.outpath, args.datapath_labels)
+    # abundance.PlotAbundance_with_test(args.datapaths, args.outpath, args.datapath_labels)
 
     if args.global_x == 'no':
         if args.PCA == 'no':
