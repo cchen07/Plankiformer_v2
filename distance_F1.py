@@ -267,7 +267,7 @@ def plot_distance_F1_testset(testsets, distance_txt_paths, F1_txt_paths, outpath
 
     if class_filter == 'yes':
         df_ID = df[df['testset'] == 'ID_test']
-        dropped_classes_1 = df_ID[df_ID['F1'] < 0.7]['class'].to_list()
+        dropped_classes_1 = df_ID[df_ID['F1'] < 0.75]['class'].to_list()
         n_testset = df['class'].value_counts()
         dropped_classes_2 = n_testset[n_testset < 4].index.to_list()
         dropped_classes = list(set(dropped_classes_1 + dropped_classes_2))
@@ -488,7 +488,7 @@ def plot_distance_F1_class(testsets, distance_txt_paths, F1_txt_paths, outpath, 
 
     if class_filter == 'yes':
         df_ID = df[df['testset'] == 'ID_test']
-        dropped_classes_1 = df_ID[df_ID['F1'] < 0.7]['class'].to_list()
+        dropped_classes_1 = df_ID[df_ID['F1'] < 0.75]['class'].to_list()
         n_testset = df['class'].value_counts()
         dropped_classes_2 = n_testset[n_testset < 4].index.to_list()
         dropped_classes = list(set(dropped_classes_1 + dropped_classes_2))
@@ -707,7 +707,7 @@ def plot_distance_F1_drop_testset(testsets, distance_txt_paths, train_F1_txt_pat
     
     if class_filter == 'yes':
         df_ID = df[df['testset'] == 'ID_test']
-        dropped_classes_1 = df_ID[df_ID['F1'] < 0.7]['class'].to_list()
+        dropped_classes_1 = df_ID[df_ID['F1'] < 0.75]['class'].to_list()
         n_testset = df['class'].value_counts()
         dropped_classes_2 = n_testset[n_testset < 4].index.to_list()
         dropped_classes = list(set(dropped_classes_1 + dropped_classes_2))
@@ -866,7 +866,7 @@ def plot_distance_F1_drop_class(testsets, distance_txt_paths, train_F1_txt_path,
     
     if class_filter == 'yes':
         df_ID = df[df['testset'] == 'ID_test']
-        dropped_classes_1 = df_ID[df_ID['F1'] < 0.7]['class'].to_list()
+        dropped_classes_1 = df_ID[df_ID['F1'] < 0.75]['class'].to_list()
         n_testset = df['class'].value_counts()
         dropped_classes_2 = n_testset[n_testset < 4].index.to_list()
         dropped_classes = list(set(dropped_classes_1 + dropped_classes_2))
@@ -1062,7 +1062,7 @@ def plot_distance_F1_drop(testsets, distance_dfs, train_F1_txt_path, F1_txt_path
 
     if class_filter == 'yes':
         df_ID = df[df['testset'] == 'ID_test']
-        dropped_classes_1 = df_ID[df_ID['F1'] < 0.7]['class'].to_list()
+        dropped_classes_1 = df_ID[df_ID['F1'] < 0.75]['class'].to_list()
         n_testset = df['class'].value_counts()
         dropped_classes_2 = n_testset[n_testset < 4].index.to_list()
         dropped_classes = list(set(dropped_classes_1 + dropped_classes_2))
@@ -1154,7 +1154,7 @@ def plot_distance_F1(testsets, distance_dfs, train_F1_txt_path, F1_txt_paths, ou
 
     if class_filter == 'yes':
         df_ID = df[df['testset'] == 'ID_test']
-        dropped_classes_1 = df_ID[df_ID['F1'] < 0.7]['class'].to_list()
+        dropped_classes_1 = df_ID[df_ID['F1'] < 0.75]['class'].to_list()
         n_testset = df['class'].value_counts()
         dropped_classes_2 = n_testset[n_testset < 4].index.to_list()
         dropped_classes = list(set(dropped_classes_1 + dropped_classes_2))
@@ -1246,7 +1246,7 @@ def plot_distance_F1_drop_per_class_per_component(testsets, distance_dfs, train_
     
     if class_filter == 'yes':
         df_ID = df[df['testset'] == 'ID_test']
-        dropped_classes_1 = df_ID[df_ID['F1'] < 0.7]['class'].to_list()
+        dropped_classes_1 = df_ID[df_ID['F1'] < 0.75]['class'].to_list()
         n_testset = df['class'].value_counts()
         dropped_classes_2 = n_testset[n_testset < 4].index.to_list()
         dropped_classes = list(set(dropped_classes_1 + dropped_classes_2))
@@ -1350,7 +1350,7 @@ def plot_distance_F1_per_class_per_component(testsets, distance_dfs, train_F1_tx
     
     if class_filter == 'yes':
         df_ID = df[df['testset'] == 'ID_test']
-        dropped_classes_1 = df_ID[df_ID['F1'] < 0.7]['class'].to_list()
+        dropped_classes_1 = df_ID[df_ID['F1'] < 0.75]['class'].to_list()
         n_testset = df['class'].value_counts()
         dropped_classes_2 = n_testset[n_testset < 4].index.to_list()
         dropped_classes = list(set(dropped_classes_1 + dropped_classes_2))

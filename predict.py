@@ -67,6 +67,10 @@ class LoadInputParameters:
                             help="Set this to one if you want to ensemble multiple models else set it to zero")
         parser.add_argument('-finetuned', type=int, default=2, help='Choose "0" or "1" or "2" for finetuning')
         parser.add_argument('-threshold', type=float, default=0.0, help="Threshold to set")
+        parser.add_argument('-resize_images', type=int, default=1,
+                            help="Images are resized to a square of LxL pixels by keeping the initial image "
+                                 "proportions if resize=1. If resize=2, then the proportions are not kept but resized "
+                                 "to match the user defined dimension")
         parser.add_argument('-predict', type=int, default=1, help='Choose "0" for training and "1" for predicting')
         parser.add_argument('-use_gpu', choices=['yes', 'no'], default='no', help='Choose "no" to run using cpu')
         parser.add_argument('-gpu_id', type=int, default=0, help="select the gpu id ")

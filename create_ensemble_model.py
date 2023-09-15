@@ -10,8 +10,9 @@ import sys
 
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 import torch
-from sklearn.metrics import accuracy_score, f1_score, classification_report
+from sklearn.metrics import f1_score, accuracy_score, classification_report, mean_absolute_error, mean_squared_error, r2_score, recall_score, roc_curve, confusion_matrix
 from scipy.stats import gmean
 
 
@@ -49,6 +50,9 @@ class LoadEnsembleParameters:
         parser = argparse.ArgumentParser(description='Create Dataset')
 
         parser.add_argument('-main_model_dir',
+                            default='/local/kyathasr/Plankiformer/out/phyto_super_class/',
+                            help="Main directory where the model is stored")
+        parser.add_argument('-main_model',
                             default='/local/kyathasr/Plankiformer/out/phyto_super_class/',
                             help="Main directory where the model is stored")
         parser.add_argument('-outpath', default='./out/Ensemble/', help="directory where you want the output saved")
@@ -119,13 +123,14 @@ class LoadEnsembleParameters:
         for model_path in self.params.model_dirs:
             DEIT_model = []
             if self.params.finetune == 0:
-                DEIT_model = pd.read_pickle(model_path + '/GT_Pred_GTLabel_PredLabel_prob_model_original.pickle')
-
+                DEIT_model = pd.read_pickle(model_path + '/Single_GT_Pred_GTLabel_PredLabel_PredLabelCorrected_Prob_original.pickle')
+                name2 = 'original'
             elif self.params.finetune == 1:
-                DEIT_model = pd.read_pickle(model_path + '/GT_Pred_GTLabel_PredLabel_prob_model_tuned.pickle')
-
+                DEIT_model = pd.read_pickle(model_path + '/Single_GT_Pred_GTLabel_PredLabel_PredLabelCorrected_Prob_tuned.pickle')
+                name2 = 'tuned'
             elif self.params.finetune == 2:
-                DEIT_model = pd.read_pickle(model_path + '//GT_Pred_GTLabel_PredLabel_prob_model_finetuned.pickle')
+                DEIT_model = pd.read_pickle(model_path + '/Single_GT_Pred_GTLabel_PredLabel_PredLabelCorrected_Prob_finetuned.pickle')
+                name2 = 'finetuned'
             else:
                 print(' Please Select correct finetuning parameters')
 
@@ -175,16 +180,122 @@ class LoadEnsembleParameters:
         with open(self.params.outpath + '/Ensemble_models_GTLabel_PredLabel_Prob_' + name + '.pickle', 'wb') as cw:
             pickle.dump(Pred_PredLabel_Prob, cw)
 
-        f = open(self.params.outpath + 'Ensemble_test_report.txt', 'w')
+        f = open(self.params.outpath + 'Ensemble_test_report_' + name + '_mean_' + name2 + '.txt', 'w')
         f.write('\n Accuracy\n\n{}\n\nF1 Score\n\n{}\n\nClassification Report\n\n{}\n'.format(accuracy_model, f1,
-                                                                                              clf_report))
+                                                                                            clf_report))
         f.close()
 
-        ff = open(self.params.outpath + 'Ensemble_test_report_rm_0.txt', 'w')
+        ff = open(self.params.outpath + 'Ensemble_test_report_rm_0_' + name + '_mean_' + name2 + '.txt', 'w')
         ff.write('\n Accuracy\n\n{}\n\nF1 Score\n\n{}\n\nClassification Report\n\n{}\n'.format(accuracy_model, f1_rm_0,
-                                                                                              clf_report_rm_0))
+                                                                                            clf_report_rm_0))
         ff.close()
 
+        ID_result = pd.read_pickle(self.params.main_model + '/GT_Pred_GTLabel_PredLabel_prob_model_' + name2 + '.pickle')
+        bias, BC, MAE, MSE, RMSE, R2, NAE, AE_rm_junk, NAE_rm_junk, df_count = extra_metrics(DEIT_GTLabel_sorted[0], Ens_DEIT_label, Ens_DEIT, ID_result)
+        fff = open(self.params.outpath + 'Ensemble_test_report_extra_' + name + '_mean_' + name2 + '.txt', 'w')
+        fff.write('\nbias\n\n{}\n\nBC\n\n{}\n\nMAE\n\n{}\n\nMSE\n\n{}\n\nRMSE\n\n{}\n\nR2\n\n{}\n\nNAE\n\n{}\n\nAE_rm_junk\n\n{}\n\nNAE_rm_junk\n\n{}\n'.format(bias, BC, MAE, MSE, RMSE, R2, NAE, AE_rm_junk, NAE_rm_junk))
+        fff.close()
+
+        df_count.to_excel(self.params.outpath + 'Population_count.xlsx', index=True, header=True)
+
+        plt.figure(figsize=(8, 6))
+        plt.subplot(1, 1, 1)
+        plt.xlabel('Class')
+        plt.ylabel('Count')
+        width = 0.5
+        x = np.arange(0, len(df_count) * 2, 2)
+        x1 = x - width / 2
+        x2 = x + width / 2
+        plt.bar(x1, df_count['Ground_truth'], width=0.5, label='Ground_truth')
+        plt.bar(x2, df_count['Predict'], width=0.5, label='Prediction')
+        plt.xticks(x, df_count.index, rotation=45, rotation_mode='anchor', ha='right')
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(self.params.outpath + 'Population_count.png', dpi=300)
+        plt.close()
+
+
+def extra_metrics(GT_label, Pred_label, Pred_prob, ID_result):
+
+    list_class = list(set(np.unique(GT_label)).union(set(np.unique(Pred_label))))
+    list_class.sort()
+    df_count_Pred_GT = pd.DataFrame(index=list_class, columns=['Predict', 'Ground_truth'])
+
+    GT_label_ID = ID_result[2].tolist()
+    Pred_label_ID = ID_result[3].tolist()
+    Pred_prob_ID = ID_result[4]
+
+    list_class_ID = np.unique(GT_label_ID).tolist()
+    list_class_ID.sort()
+    df_prob = pd.DataFrame(index=list_class_ID, columns=['prob'])
+    for i in range(len(list_class_ID)):
+        df_prob.iloc[i] = np.sum(Pred_prob[:, i])
+
+    df_prob_ID_all = pd.DataFrame(data=Pred_prob_ID, columns=list_class_ID)
+
+    CC = []
+    AC = []
+    PCC = []
+    PAC = []
+
+    Pred_label = Pred_label.tolist()
+    GT_label = GT_label.tolist()
+    for iclass in list_class:
+        df_count_Pred_GT.loc[iclass, 'Predict'] = Pred_label.count(iclass)
+        df_count_Pred_GT.loc[iclass, 'Ground_truth'] = GT_label.count(iclass)
+
+        class_CC = Pred_label.count(iclass)
+        CC.append(class_CC)
+
+        true_copy, pred_copy = GT_label_ID.copy(), Pred_label_ID.copy()
+        for i in range(len(GT_label_ID)):
+            if GT_label_ID[i] == iclass:
+                true_copy[i] = 1
+            else:
+                true_copy[i] = 0
+            if Pred_label_ID[i] == iclass:
+                pred_copy[i] = 1
+            else:
+                pred_copy[i] = 0
+        tn, fp, fn, tp = confusion_matrix(true_copy, pred_copy).ravel()
+        tpr = tp / (tp + fn)
+        fpr = fp / (tn + fp)
+        class_AC = (class_CC - (fpr * len(Pred_label))) / (tpr - fpr)
+        AC.append(class_AC)
+
+        class_PCC = df_prob.loc[iclass, 'prob']
+        PCC.append(class_PCC)
+
+        df_prob_ID = pd.DataFrame()
+        df_prob_ID['Pred_label'] = Pred_label_ID
+        df_prob_ID['GT_label'] = GT_label_ID
+        df_prob_ID['Pred_prob'] = df_prob_ID_all[iclass]
+        tpr_prob = np.sum(df_prob_ID[(df_prob_ID['GT_label'] == iclass) & (df_prob_ID['Pred_label'] == iclass)]['Pred_prob']) / (tp + fn)
+        fpr_prob = np.sum(df_prob_ID[(df_prob_ID['GT_label'] != iclass) & (df_prob_ID['Pred_label'] == iclass)]['Pred_prob']) / (tn + fp)
+        class_PAC = (class_PCC - (fpr_prob * len(Pred_label))) / (tpr_prob - fpr_prob)
+        PAC.append(class_PAC)
+
+    df_percentage_Pred_GT = df_count_Pred_GT.div(df_count_Pred_GT.sum(axis=0), axis=1)
+    df_count_Pred_GT['Bias'] = df_count_Pred_GT['Predict'] - df_count_Pred_GT['Ground_truth']
+    df_count_Pred_GT['CC'], df_count_Pred_GT['AC'], df_count_Pred_GT['PCC'], df_count_Pred_GT['PAC'] = CC, AC, PCC, PAC
+
+    df_count_Pred_GT_rm_junk = df_count_Pred_GT.drop(['dirt', 'unknown', 'unknown_plankton'], errors='ignore')
+    df_count_Pred_GT_rm_junk = df_count_Pred_GT_rm_junk.drop(df_count_Pred_GT_rm_junk[df_count_Pred_GT_rm_junk['Ground_truth'] == 0].index)
+
+    df_count_Pred_GT_rm_0 = df_count_Pred_GT.drop(df_count_Pred_GT[df_count_Pred_GT['Ground_truth'] == 0].index)
+
+    bias = np.sum(df_count_Pred_GT['Predict'] - df_count_Pred_GT['Ground_truth']) / df_count_Pred_GT.shape[0]
+    BC = np.sum(np.abs(df_count_Pred_GT['Predict'] - df_count_Pred_GT['Ground_truth'])) / np.sum(np.abs(df_count_Pred_GT['Predict'] + df_count_Pred_GT['Ground_truth']))
+    MAE = mean_absolute_error(df_count_Pred_GT['Ground_truth'], df_count_Pred_GT['Predict'])
+    MSE = mean_squared_error(df_count_Pred_GT['Ground_truth'], df_count_Pred_GT['Predict'])
+    RMSE = np.sqrt(MSE)
+    R2 = r2_score(df_count_Pred_GT['Ground_truth'], df_count_Pred_GT['Predict'])
+
+    AE_rm_junk = np.sum(np.abs(df_count_Pred_GT_rm_junk['Predict'] - df_count_Pred_GT_rm_junk['Ground_truth']))
+    NAE_rm_junk = np.sum(np.divide(np.abs(df_count_Pred_GT_rm_junk['Predict'] - df_count_Pred_GT_rm_junk['Ground_truth']), df_count_Pred_GT_rm_junk['Ground_truth']))
+    NAE = np.sum(np.divide(np.abs(df_count_Pred_GT_rm_0['Predict'] - df_count_Pred_GT_rm_0['Ground_truth']), df_count_Pred_GT_rm_0['Ground_truth']))
+
+    return bias, BC, MAE, MSE, RMSE, R2, NAE, AE_rm_junk, NAE_rm_junk, df_count_Pred_GT
 
 if __name__ == '__main__':
     print('\n Running Ensemble', sys.argv[0], sys.argv[1:])

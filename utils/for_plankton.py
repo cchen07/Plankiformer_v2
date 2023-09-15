@@ -358,7 +358,6 @@ class AugmentedDataset(Dataset):
             T.Resize(224),
             T.RandomHorizontalFlip(),
             T.RandomVerticalFlip(),
-            T.RandomResizedCrop(size=(224, 224), scale=(0.35, 1.0), ratio=(0.9, 1.1)),
             # T.ElasticTransform(alpha=1.0, sigma=1.0),
             T.RandomPerspective(distortion_scale=0.5, p=0.2),
             T.RandomPosterize(bits=5, p=0.2),
@@ -376,6 +375,7 @@ class AugmentedDataset(Dataset):
             # T.Grayscale(),
             # T.RandomInvert(),
             # T.RandomEqualize(),
+            T.RandomResizedCrop(size=(224, 224), scale=(0.35, 1.0), ratio=(0.9, 1.1)),
             T.ToTensor()])
     transform1_y = T.Compose([T.ToTensor()])
     
@@ -384,13 +384,13 @@ class AugmentedDataset(Dataset):
             T.Resize(224),
             T.RandomHorizontalFlip(),
             T.RandomVerticalFlip(),
-            T.RandomResizedCrop(size=(224, 224), scale=(0.35, 1.0), ratio=(0.9, 1.1)),
-            # T.ElasticTransform(alpha=1.0, sigma=1.0),
-            T.RandomPerspective(distortion_scale=0.5, p=0.2),
-            T.ColorJitter(brightness=(0.7, 1.3), contrast=(0.8, 1.2), saturation=(0.5, 1.0), hue=(-0.01, 0.01)),
-            T.GaussianBlur(kernel_size=(5, 5), sigma=(0.1, 2.0)),
             T.RandomRotation(degrees=(0, 360)),
-            T.RandomAffine(degrees=0, translate=(0.1, 0.1), scale=(0.8, 1.0), shear=(1, 1, 1, 1)),
+            # T.ElasticTransform(alpha=1.0, sigma=1.0),
+            T.RandomPerspective(distortion_scale=0.5, p=0.5),
+            T.ColorJitter(brightness=(0.8, 1.2), contrast=(0.5, 1.5), saturation=(0.5, 1.5), hue=(-0.03, 0.03)),
+            T.GaussianBlur(kernel_size=(3, 3), sigma=(0.1, 10.0)),
+            T.RandomAffine(degrees=0, translate=(0.1, 0.1), scale=(0.8, 1.2), shear=(5, 5, 5, 5)),
+            T.RandomResizedCrop(size=(224, 224), scale=(0.3, 1.0), ratio=(0.9, 1.1)),
             T.ToTensor()])
     transform2_y = T.Compose([T.ToTensor()])
 

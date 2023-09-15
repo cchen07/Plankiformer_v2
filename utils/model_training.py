@@ -15,7 +15,7 @@ import torch.nn as nn
 import torch.optim
 import torch.utils.data
 from scipy.stats import gmean
-from sklearn.metrics import f1_score, accuracy_score, classification_report, mean_absolute_error, mean_squared_error, r2_score, recall_score, roc_curve
+from sklearn.metrics import f1_score, accuracy_score, classification_report, mean_absolute_error, mean_squared_error, r2_score, recall_score, roc_curve, confusion_matrix
 from torchvision.utils import make_grid
 
 # np.random.seed(0)
@@ -82,6 +82,9 @@ class import_and_train_model:
                                            num_classes=num_classes)
         elif train_main.params.architecture == 'swin':
             self.model = timm.create_model('swin_base_patch4_window7_224.ms_in22k_ft_in1k', pretrained=True,
+                                           num_classes=num_classes)
+        elif train_main.params.architecture == 'beit':
+            self.model = timm.create_model('beit_base_patch16_224.in22k_ft_in22k_in1k', pretrained=True,
                                            num_classes=num_classes)
         else:
             print('This model cannot be imported. Please check from the list of models')
@@ -186,37 +189,40 @@ class import_and_train_model:
         num_classes=len(np.unique(classes))
 
         if train_main.params.architecture == 'deit':
-            self.model = timm.create_model('deit_base_distilled_patch16_224', pretrained=True,
+            self.model = timm.create_model('deit_base_distilled_patch16_224.fb_in1k', pretrained=True,
                                            num_classes=num_classes)
         elif train_main.params.architecture == 'efficientnetb2':
-            self.model = timm.create_model('tf_efficientnet_b2', pretrained=True,
+            self.model = timm.create_model('tf_efficientnet_b2.ns_jft_in1k', pretrained=True,
                                            num_classes=num_classes)
         elif train_main.params.architecture == 'efficientnetb5':
-            self.model = timm.create_model('tf_efficientnet_b5', pretrained=True,
+            self.model = timm.create_model('tf_efficientnet_b5.ns_jft_in1k', pretrained=True,
                                            num_classes=num_classes)
         elif train_main.params.architecture == 'efficientnetb6':
-            self.model = timm.create_model('tf_efficientnet_b6', pretrained=True,
+            self.model = timm.create_model('tf_efficientnet_b6.ns_jft_in1k', pretrained=True,
                                            num_classes=num_classes)
         elif train_main.params.architecture == 'efficientnetb7':
-            self.model = timm.create_model('tf_efficientnet_b7', pretrained=True,
+            self.model = timm.create_model('tf_efficientnet_b7.ns_jft_in1k', pretrained=True,
                                            num_classes=num_classes)
         elif train_main.params.architecture == 'densenet':
-            self.model = timm.create_model('densenet161', pretrained=True,
+            self.model = timm.create_model('densenet161.tv_in1k', pretrained=True,
                                            num_classes=num_classes)
         elif train_main.params.architecture == 'mobilenet':
-            self.model = timm.create_model('mobilenetv3_large_100_miil', pretrained=True,
+            self.model = timm.create_model('mobilenetv3_large_100.miil_in21k_ft_in1k', pretrained=True,
                                            num_classes=num_classes)
         elif train_main.params.architecture == 'inception':
-            self.model = timm.create_model('inception_v4', pretrained=True,
+            self.model = timm.create_model('inception_v4.tf_in1k', pretrained=True,
                                            num_classes=num_classes)
         elif train_main.params.architecture == 'vit':
-            self.model = timm.create_model('vit_base_patch16_224', pretrained=True,
+            self.model = timm.create_model('vit_base_patch16_224.augreg2_in21k_ft_in1k', pretrained=True,
                                            num_classes=num_classes)
         elif train_main.params.architecture == 'mae':
             self.model = timm.create_model('vit_base_patch16_224.mae', pretrained=True,
                                            num_classes=num_classes)
         elif train_main.params.architecture == 'swin':
-            self.model = timm.create_model('swin_base_patch4_window7_224', pretrained=True,
+            self.model = timm.create_model('swin_base_patch4_window7_224.ms_in22k_ft_in1k', pretrained=True,
+                                           num_classes=num_classes)
+        elif train_main.params.architecture == 'beit':
+            self.model = timm.create_model('beit_base_patch16_224.in22k_ft_in22k_in1k', pretrained=True,
                                            num_classes=num_classes)
         else:
             print('This model cannot be imported. Please check from the list of models')
@@ -1306,12 +1312,15 @@ class import_and_train_model:
                                                                                                   clf_report_rm_0))
             ff.close()
 
-            bias, MAE, MSE, RMSE, R2, weighted_recall, df_count = extra_metrics(target_label.tolist(), output_label)
+            ID_result = pd.read_pickle(test_main.params.model_path[0] + '/GT_Pred_GTLabel_PredLabel_prob_model_' + name + '.pickle')
+            bias, BC, MAE, MSE, RMSE, R2, NAE, AE_rm_junk, NAE_rm_junk, df_count, BC_AC, BC_PCC, BC_PAC = extra_metrics(target_label.tolist(), output_label, prob, ID_result)
             fff = open(test_main.params.test_outpath + 'Single_test_report_extra_' + name + '.txt', 'w')
-            fff.write('\nbias\n\n{}\n\nMAE\n\n{}\n\nMSE\n\n{}\n\nRMSE\n\n{}\n\nR2\n\n{}\n\nweighted_recall\n\n{}\n'.format(bias, MAE, MSE, RMSE, R2, weighted_recall))
+            fff.write('\nbias\n\n{}\n\nBC\n\n{}\n\nMAE\n\n{}\n\nMSE\n\n{}\n\nRMSE\n\n{}\n\nR2\n\n{}\n\nNAE\n\n{}\n\nAE_rm_junk\n\n{}\n\nNAE_rm_junk\n\n{}\n'.format(bias, BC, MAE, MSE, RMSE, R2, NAE, AE_rm_junk, NAE_rm_junk))
             fff.close()
 
             df_count.to_excel(test_main.params.test_outpath + 'Population_count.xlsx', index=True, header=True)
+
+            # CC, AC, PCC = quantification(target_label.tolist(), output_label, prob)
 
             plt.figure(figsize=(8, 6))
             plt.subplot(1, 1, 1)
@@ -1370,7 +1379,7 @@ class import_and_train_model:
             unknown_index = np.where(labels=='unknown')[0][0]
             labels_rm_unknown = np.delete(labels, unknown_index)
 
-            df_labels = pd.DataFrame(data=[target_label, output_label])
+            df_labels = pd.DataFrame(data=[target_label, output_label, prob])
             df_labels_rm_unknown = df_labels.drop(columns=df_labels.columns[df_labels.iloc[0] == 'unknown'])
 
             accuracy_rm_unknown = accuracy_score(df_labels_rm_unknown.iloc[0].tolist(), df_labels_rm_unknown.iloc[1].tolist())
@@ -1382,24 +1391,24 @@ class import_and_train_model:
                                                                                                   clf_report_rm_unknown))
             ffff.close()
 
-            bias_rm_unknown, MAE_rm_unknown, MSE_rm_unknown, RMSE_rm_unknown, R2_rm_unknown, weighted_recall_rm_unknown, df_count_rm_unknown = extra_metrics(df_labels_rm_unknown.iloc[0].tolist(), df_labels_rm_unknown.iloc[1].tolist())
-            fffff = open(test_main.params.test_outpath + 'Single_test_report_extra_rm_unknown_' + name + '.txt', 'w')
-            fffff.write('\nbias\n\n{}\n\nMAE\n\n{}\n\nMSE\n\n{}\n\nRMSE\n\n{}\n\nR2\n\n{}\n\nweighted_recall\n\n{}\n'.format(bias_rm_unknown, MAE_rm_unknown, MSE_rm_unknown, RMSE_rm_unknown, R2_rm_unknown, weighted_recall_rm_unknown))
-            fffff.close()
+            # bias_rm_unknown, BC_rm_unknown, MAE_rm_unknown, MSE_rm_unknown, RMSE_rm_unknown, R2_rm_unknown, weighted_recall_rm_unknown, df_count_rm_unknown = extra_metrics(df_labels_rm_unknown.iloc[0].tolist(), df_labels_rm_unknown.iloc[1].tolist(), df_labels_rm_unknown.iloc[2].tolist())
+            # fffff = open(test_main.params.test_outpath + 'Single_test_report_extra_rm_unknown_' + name + '.txt', 'w')
+            # fffff.write('\nbias\n\n{}\n\nBC\n\n{}\n\nMAE\n\n{}\n\nMSE\n\n{}\n\nRMSE\n\n{}\n\nR2\n\n{}\n\nweighted_recall\n\n{}\n'.format(bias_rm_unknown, BC_rm_unknown, MAE_rm_unknown, MSE_rm_unknown, RMSE_rm_unknown, R2_rm_unknown, weighted_recall_rm_unknown))
+            # fffff.close()
 
             class_target = np.unique(target_label).tolist()
             class_output = np.unique(output_label).tolist()
             zero_support = list(set(class_output)-set(class_target))
-            df_labels_rm_0 = pd.DataFrame(data=[target_label, output_label])
+            df_labels_rm_0 = pd.DataFrame(data=[target_label, output_label, prob])
             df_labels_rm_0_t = df_labels_rm_0.transpose()
             
             for i in zero_support:
                 df_labels_rm_0_t = df_labels_rm_0_t[df_labels_rm_0_t.iloc[:, 1] != i]
             df_labels_rm_0 = df_labels_rm_0_t.transpose()
-            bias_rm_0, MAE_rm_0, MSE_rm_0, RMSE_rm_0, R2_rm_0, weighted_recall_rm_0, df_count_rm_0 = extra_metrics(df_labels_rm_0.iloc[0].tolist(), df_labels_rm_0.iloc[1].tolist())
-            ffffff = open(test_main.params.test_outpath + 'Single_test_report_extra_rm_0_' + name + '.txt', 'w')
-            ffffff.write('\nbias\n\n{}\n\nMAE\n\n{}\n\nMSE\n\n{}\n\nRMSE\n\n{}\n\nR2\n\n{}\n\nweighted_recall\n\n{}\n'.format(bias_rm_0, MAE_rm_0, MSE_rm_0, RMSE_rm_0, R2_rm_0, weighted_recall_rm_0))
-            ffffff.close()
+            # bias_rm_0, BC_rm_0, MAE_rm_0, MSE_rm_0, RMSE_rm_0, R2_rm_0, weighted_recall_rm_0, df_count_rm_0 = extra_metrics(df_labels_rm_0.iloc[0].tolist(), df_labels_rm_0.iloc[1].tolist(), df_labels_rm_0.iloc[2].tolist())
+            # ffffff = open(test_main.params.test_outpath + 'Single_test_report_extra_rm_0_' + name + '.txt', 'w')
+            # ffffff.write('\nbias\n\n{}\n\nBC\n\n{}\n\nMAE\n\n{}\n\nMSE\n\n{}\n\nRMSE\n\n{}\n\nR2\n\n{}\n\nweighted_recall\n\n{}\n'.format(bias_rm_0, BC_rm_0, MAE_rm_0, MSE_rm_0, RMSE_rm_0, R2_rm_0, weighted_recall_rm_0))
+            # ffffff.close()
 
             filenames_out = im_names[0]
             filenames_out.reset_index(drop=True, inplace=True)
@@ -1606,18 +1615,37 @@ class import_and_train_model:
                                                                                                   clf_report_rm_0))
             ff.close()
 
-            bias, MAE, MSE, RMSE, R2, weighted_recall, df_count = extra_metrics(GT_label.tolist(), Ens_DEIT_label)
+            ID_result = pd.read_pickle(test_main.params.model_path[0] + '/GT_Pred_GTLabel_PredLabel_prob_model_' + name + '.pickle')
+            bias, BC, MAE, MSE, RMSE, R2, NAE, AE_rm_junk, NAE_rm_junk, df_count, BC_AC, BC_PCC, BC_PAC = extra_metrics(GT_label.tolist(), Ens_DEIT_label, Ens_DEIT, ID_result)
             fff = open(test_main.params.test_outpath + 'Ensemble_test_report_extra_' + name2 + name + '.txt', 'w')
-            fff.write('\nbias\n\n{}\n\nMAE\n\n{}\n\nMSE\n\n{}\n\nRMSE\n\n{}\n\nR2\n\n{}\n\nweighted_recall\n\n{}\n'.format(bias, MAE, MSE, RMSE, R2, weighted_recall))
+            fff.write('\nbias\n\n{}\n\nBC\n\n{}\n\nMAE\n\n{}\n\nMSE\n\n{}\n\nRMSE\n\n{}\n\nR2\n\n{}\n\nNAE\n\n{}\n\nAE_rm_junk\n\n{}\n\nNAE_rm_junk\n\n{}\n'.format(bias, BC, MAE, MSE, RMSE, R2, NAE, AE_rm_junk, NAE_rm_junk))
             fff.close()
 
             df_count.to_excel(test_main.params.test_outpath + 'Population_count.xlsx', index=True, header=True)
+
+            # CC, AC, PCC = quantification(GT_label.tolist(), Ens_DEIT_label, Ens_DEIT)
+
+            plt.figure(figsize=(8, 6))
+            plt.subplot(1, 1, 1)
+            plt.xlabel('Class')
+            plt.ylabel('Count')
+            width = 0.5
+            x = np.arange(0, len(df_count) * 2, 2)
+            x1 = x - width / 2
+            x2 = x + width / 2
+            plt.bar(x1, df_count['Ground_truth'], width=0.5, label='Ground_truth')
+            plt.bar(x2, df_count['Predict'], width=0.5, label='Prediction')
+            plt.xticks(x, df_count.index, rotation=45, rotation_mode='anchor', ha='right')
+            plt.legend()
+            plt.tight_layout()
+            plt.savefig(test_main.params.test_outpath + 'Population_count.png', dpi=300)
+            plt.close()
 
             labels = np.unique(GT_label)
             unknown_index = np.where(labels=='unknown')[0][0]
             labels_rm_unknown = np.delete(labels, unknown_index)
             
-            df_labels = pd.DataFrame(data=[GT_label, Ens_DEIT_label])
+            df_labels = pd.DataFrame(data=[GT_label, Ens_DEIT_label, Ens_DEIT])
             df_labels_rm_unknown = df_labels.drop(columns=df_labels.columns[df_labels.iloc[0] == 'unknown'])
 
             # # for phyto  
@@ -1649,22 +1677,22 @@ class import_and_train_model:
                                                                                                   clf_report_rm_unknown))
             ffff.close()
 
-            bias_rm_unknown, MAE_rm_unknown, MSE_rm_unknown, RMSE_rm_unknown, R2_rm_unknown, weighted_recall_rm_unknown, df_count_rm_unknown = extra_metrics(df_labels_rm_unknown.iloc[0].tolist(), df_labels_rm_unknown.iloc[1].tolist())
-            fffff = open(test_main.params.test_outpath + 'Ensemble_test_report_extra_rm_unknown_' + name + '.txt', 'w')
-            fffff.write('\nbias\n\n{}\n\nMAE\n\n{}\n\nMSE\n\n{}\n\nRMSE\n\n{}\n\nR2\n\n{}\n\nweighted_recall\n\n{}\n'.format(bias_rm_unknown, MAE_rm_unknown, MSE_rm_unknown, RMSE_rm_unknown, R2_rm_unknown, weighted_recall_rm_unknown))
-            fffff.close()
+            # bias_rm_unknown, BC_rm_unknown, MAE_rm_unknown, MSE_rm_unknown, RMSE_rm_unknown, R2_rm_unknown, weighted_recall_rm_unknown, df_count_rm_unknown = extra_metrics(df_labels_rm_unknown.iloc[0].tolist(), df_labels_rm_unknown.iloc[1].tolist(), df_labels_rm_unknown.iloc[2].tolist())
+            # fffff = open(test_main.params.test_outpath + 'Ensemble_test_report_extra_rm_unknown_' + name + '.txt', 'w')
+            # fffff.write('\nbias\n\n{}\n\nBC\n\n{}\n\nMAE\n\n{}\n\nMSE\n\n{}\n\nRMSE\n\n{}\n\nR2\n\n{}\n\nweighted_recall\n\n{}\n'.format(bias_rm_unknown, BC_rm_unknown, MAE_rm_unknown, MSE_rm_unknown, RMSE_rm_unknown, R2_rm_unknown, weighted_recall_rm_unknown))
+            # fffff.close()
 
             class_target = np.unique(target_label).tolist()
             class_output = np.unique(output_label).tolist()
             zero_support = list(set(class_output)-set(class_target))
-            df_labels_rm_0 = pd.DataFrame(data=[target_label, output_label])
+            df_labels_rm_0 = pd.DataFrame(data=[target_label, output_label, prob])
             for i in zero_support:
                 df_labels_rm_0 = df_labels_rm_0.drop(columns=df_labels_rm_0.columns[df_labels.iloc[0] == i])
 
-            bias_rm_0, MAE_rm_0, MSE_rm_0, RMSE_rm_0, R2_rm_0, weighted_recall_rm_0, df_count_rm_0 = extra_metrics(df_labels_rm_0.iloc[0].tolist(), df_labels_rm_0.iloc[1].tolist())
-            ffffff = open(test_main.params.test_outpath + 'Ensemble_test_report_extra_rm_0_' + name + '.txt', 'w')
-            ffffff.write('\nbias\n\n{}\n\nMAE\n\n{}\n\nMSE\n\n{}\n\nRMSE\n\n{}\n\nR2\n\n{}\n\nweighted_recall\n\n{}\n'.format(bias_rm_0, MAE_rm_0, MSE_rm_0, RMSE_rm_0, R2_rm_0, weighted_recall_rm_0))
-            ffffff.close()
+            # bias_rm_0, BC_rm_0, MAE_rm_0, MSE_rm_0, RMSE_rm_0, R2_rm_0, weighted_recall_rm_0, df_count_rm_0 = extra_metrics(df_labels_rm_0.iloc[0].tolist(), df_labels_rm_0.iloc[1].tolist(), df_labels_rm_0.iloc[2].tolist())
+            # ffffff = open(test_main.params.test_outpath + 'Ensemble_test_report_extra_rm_0_' + name + '.txt', 'w')
+            # ffffff.write('\nbias\n\n{}\n\nBC\n\n{}\n\nMAE\n\n{}\n\nMSE\n\n{}\n\nRMSE\n\n{}\n\nR2\n\n{}\n\nweighted_recall\n\n{}\n'.format(bias_rm_0, BC_rm_0, MAE_rm_0, MSE_rm_0, RMSE_rm_0, R2_rm_0, weighted_recall_rm_0))
+            # ffffff.close()
 
 
             filenames_out = im_names[0]
@@ -1684,7 +1712,10 @@ class import_and_train_model:
     def initialize_model(self, train_main, test_main, data_loader, lr):
 
         if torch.cuda.is_available() and train_main.params.use_gpu == 'yes':
-            device = torch.device("cuda:" + str(train_main.params.gpu_id))
+            if test_main is None:
+                device = torch.device("cuda:" + str(train_main.params.gpu_id))
+            else:
+                device = torch.device("cuda:" + str(test_main.params.gpu_id))
         else:
             device = torch.device("cpu")
 
@@ -2132,46 +2163,88 @@ def cls_predict_on_unseen_with_y(train_main, test_main, val_loader, model, crite
     return avg_acc1, targets, outputs, probs
 
 
-def extra_metrics(GT_label, Pred_label):
+def extra_metrics(GT_label, Pred_label, Pred_prob, ID_result):
 
     list_class = list(set(np.unique(GT_label)).union(set(np.unique(Pred_label))))
     list_class.sort()
     df_count_Pred_GT = pd.DataFrame(index=list_class, columns=['Predict', 'Ground_truth'])
 
-    for index in list_class:
-        df_count_Pred_GT.loc[index, 'Predict'] = Pred_label.count(index)
-        df_count_Pred_GT.loc[index, 'Ground_truth'] = GT_label.count(index)
+    GT_label_ID = ID_result[2].tolist()
+    Pred_label_ID = ID_result[3].tolist()
+    Pred_prob_ID = ID_result[4]
 
-    df_percentage_Pred_GT = df_count_Pred_GT.div(df_count_Pred_GT.sum(axis=0), axis=1)
-    df_count_Pred_GT['Bias'] = df_count_Pred_GT['Predict'] - df_count_Pred_GT['Ground_truth']
+    list_class_ID = np.unique(GT_label_ID).tolist()
+    list_class_ID.sort()
+    df_prob = pd.DataFrame(index=list_class_ID, columns=['prob'])
+    for i in range(len(list_class_ID)):
+        df_prob.iloc[i] = np.sum(Pred_prob[:, i])
 
-    bias = np.sum(df_percentage_Pred_GT['Predict'] - df_percentage_Pred_GT['Ground_truth']) / df_percentage_Pred_GT.shape[0]
-    MAE = mean_absolute_error(df_percentage_Pred_GT['Ground_truth'], df_percentage_Pred_GT['Predict'])
-    MSE = mean_squared_error(df_percentage_Pred_GT['Ground_truth'], df_percentage_Pred_GT['Predict'])
-    RMSE = np.sqrt(MSE)
-    R2 = r2_score(df_percentage_Pred_GT['Ground_truth'], df_percentage_Pred_GT['Predict'])
-
-    weighted_recall = recall_score(GT_label, Pred_label, average='weighted')
-
-    return bias, MAE, MSE, RMSE, R2, weighted_recall, df_count_Pred_GT
-
-
-def quantification(GT_label, Pred_label, Pred_prob):
-    pred_classes = np.unique(Pred_label)
-    pred_classes.sort()
+    df_prob_ID_all = pd.DataFrame(data=Pred_prob_ID, columns=list_class_ID)
 
     CC = []
     AC = []
     PCC = []
-    for i, iclass in enumerate(pred_classes):
-        class_CC = Pred_label.count(iclass) / len(Pred_label)
+    PAC = []
+
+    for iclass in list_class:
+        df_count_Pred_GT.loc[iclass, 'Predict'] = Pred_label.count(iclass)
+        df_count_Pred_GT.loc[iclass, 'Ground_truth'] = GT_label.count(iclass)
+
+        class_CC = Pred_label.count(iclass)
         CC.append(class_CC)
 
-        FPR, TPR, _ = roc_curve(GT_label, Pred_prob[:, i], pos_label=iclass)
-        class_AC = (class_CC - FPR) / (TPR - FPR)
+        true_copy, pred_copy = GT_label_ID.copy(), Pred_label_ID.copy()
+        for i in range(len(GT_label_ID)):
+            if GT_label_ID[i] == iclass:
+                true_copy[i] = 1
+            else:
+                true_copy[i] = 0
+            if Pred_label_ID[i] == iclass:
+                pred_copy[i] = 1
+            else:
+                pred_copy[i] = 0
+        tn, fp, fn, tp = confusion_matrix(true_copy, pred_copy).ravel()
+        tpr = tp / (tp + fn)
+        fpr = fp / (tn + fp)
+        class_AC = (class_CC - (fpr * len(Pred_label))) / (tpr - fpr)
         AC.append(class_AC)
 
-        class_PCC = np.average(Pred_prob[:, i])
+        class_PCC = df_prob.loc[iclass, 'prob']
         PCC.append(class_PCC)
 
-    return CC, AC, PCC
+        df_prob_ID = pd.DataFrame()
+        df_prob_ID['Pred_label'] = Pred_label_ID
+        df_prob_ID['GT_label'] = GT_label_ID
+        df_prob_ID['Pred_prob'] = df_prob_ID_all[iclass]
+        tpr_prob = np.sum(df_prob_ID[(df_prob_ID['GT_label'] == iclass) & (df_prob_ID['Pred_label'] == iclass)]['Pred_prob']) / (tp + fn)
+        fpr_prob = np.sum(df_prob_ID[(df_prob_ID['GT_label'] != iclass) & (df_prob_ID['Pred_label'] == iclass)]['Pred_prob']) / (tn + fp)
+        class_PAC = (class_PCC - (fpr_prob * len(Pred_label))) / (tpr_prob - fpr_prob)
+        PAC.append(class_PAC)
+
+    df_percentage_Pred_GT = df_count_Pred_GT.div(df_count_Pred_GT.sum(axis=0), axis=1)
+    df_count_Pred_GT['Bias'] = df_count_Pred_GT['Predict'] - df_count_Pred_GT['Ground_truth']
+    df_count_Pred_GT['CC'], df_count_Pred_GT['AC'], df_count_Pred_GT['PCC'], df_count_Pred_GT['PAC'] = CC, AC, PCC, PAC
+
+    df_count_Pred_GT_rm_junk = df_count_Pred_GT.drop(['dirt', 'unknown', 'unknown_plankton'], errors='ignore')
+    df_count_Pred_GT_rm_junk = df_count_Pred_GT_rm_junk.drop(df_count_Pred_GT_rm_junk[df_count_Pred_GT_rm_junk['Ground_truth'] == 0].index)
+
+    df_count_Pred_GT_rm_0 = df_count_Pred_GT.drop(df_count_Pred_GT[df_count_Pred_GT['Ground_truth'] == 0].index)
+
+    bias = np.sum(df_count_Pred_GT['Predict'] - df_count_Pred_GT['Ground_truth']) / df_count_Pred_GT.shape[0]
+    BC = np.sum(np.abs(df_count_Pred_GT['Predict'] - df_count_Pred_GT['Ground_truth'])) / np.sum(np.abs(df_count_Pred_GT['Predict'] + df_count_Pred_GT['Ground_truth']))
+
+    # Adjusted BC
+    BC_AC = np.sum(np.abs(df_count_Pred_GT['AC'] - df_count_Pred_GT['Ground_truth'])) / np.sum(np.abs(df_count_Pred_GT['AC'] + df_count_Pred_GT['Ground_truth']))
+    BC_PCC = np.sum(np.abs(df_count_Pred_GT['PCC'] - df_count_Pred_GT['Ground_truth'])) / np.sum(np.abs(df_count_Pred_GT['PCC'] + df_count_Pred_GT['Ground_truth']))
+    BC_PAC = np.sum(np.abs(df_count_Pred_GT['PAC'] - df_count_Pred_GT['Ground_truth'])) / np.sum(np.abs(df_count_Pred_GT['PAC'] + df_count_Pred_GT['Ground_truth']))
+
+    MAE = mean_absolute_error(df_count_Pred_GT['Ground_truth'], df_count_Pred_GT['Predict'])
+    MSE = mean_squared_error(df_count_Pred_GT['Ground_truth'], df_count_Pred_GT['Predict'])
+    RMSE = np.sqrt(MSE)
+    R2 = r2_score(df_count_Pred_GT['Ground_truth'], df_count_Pred_GT['Predict'])
+
+    AE_rm_junk = np.sum(np.abs(df_count_Pred_GT_rm_junk['Predict'] - df_count_Pred_GT_rm_junk['Ground_truth']))
+    NAE_rm_junk = np.sum(np.divide(np.abs(df_count_Pred_GT_rm_junk['Predict'] - df_count_Pred_GT_rm_junk['Ground_truth']), df_count_Pred_GT_rm_junk['Ground_truth']))
+    NAE = np.sum(np.divide(np.abs(df_count_Pred_GT_rm_0['Predict'] - df_count_Pred_GT_rm_0['Ground_truth']), df_count_Pred_GT_rm_0['Ground_truth']))
+
+    return bias, BC, MAE, MSE, RMSE, R2, NAE, AE_rm_junk, NAE_rm_junk, df_count_Pred_GT, BC_AC, BC_PCC, BC_PAC

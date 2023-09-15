@@ -119,7 +119,7 @@ class LoadInputParameters:
                                                     '"kaggle", "eilat", "rsmas", "birds", "dogs", "beetle", "wildtrap"')
 
         # For model training
-        parser.add_argument('-architecture', choices=['efficientnetb2', 'efficientnetb5', 'efficientnetb6', 'efficientnetb7', 'densenet', 'mobilenet', 'inception', 'deit', 'vit', 'mae', 'swin'],
+        parser.add_argument('-architecture', choices=['efficientnetb2', 'efficientnetb5', 'efficientnetb6', 'efficientnetb7', 'densenet', 'mobilenet', 'inception', 'deit', 'vit', 'mae', 'swin', 'beit'],
                             default='deit', help='Choose the model architecture')
         # parser.add_argument('-architecture', choices=['cnn', 'deit'],
         #                     default='deit', help='Choose between different datasets "cnn", "deit"')
@@ -163,6 +163,8 @@ class LoadInputParameters:
                             help='path of the saved models')
         parser.add_argument('-finetuned', type=int, default=2, help='Choose "0" or "1" or "2" for finetuning')
         parser.add_argument('-threshold', type=float, default=0.0, help="Threshold to set")
+        parser.add_argument('-TTA_type', type=int, default=0,
+                            help='Choose the version of test-time augmention')
 
         # Related to ensembling
         parser.add_argument('-ensemble', type=int, default=0,

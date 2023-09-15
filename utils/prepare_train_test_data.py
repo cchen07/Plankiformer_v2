@@ -87,7 +87,7 @@ class CreateDataset:
         # meaning of selecting all the classes
         classifier = train_main.params.classifier
         compute_extrafeat = train_main.params.compute_extrafeat
-        resize_images = train_main.params.resize_images
+        resize_images = test_main.params.resize_images
         datakind = train_main.params.datakind
         training_data = train_main.params.training_data
 

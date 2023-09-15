@@ -169,28 +169,57 @@ def population_scatter(testsets, test_bias_xlsx_paths, outpath):
 
     df_true = pd.DataFrame(index=classes, columns=testsets)
     df_pred = pd.DataFrame(index=classes, columns=testsets)
+    df_pred_AC = pd.DataFrame(index=classes, columns=testsets)
+    df_pred_PCC = pd.DataFrame(index=classes, columns=testsets)
+    df_pred_PAC = pd.DataFrame(index=classes, columns=testsets)
+
     for i, itestset in enumerate(testsets):
         df_bias = preprocess_bias_xlsx(test_bias_xlsx_paths[i])
         df_bias = df_bias.set_index('class')
         for iclass in df_bias.index:
             df_true.loc[iclass, itestset] = df_bias.loc[iclass, 'Ground_truth']
             df_pred.loc[iclass, itestset] = df_bias.loc[iclass, 'Predict']
+            df_pred_AC.loc[iclass, itestset] = df_bias.loc[iclass, 'AC']
+            df_pred_PCC.loc[iclass, itestset] = df_bias.loc[iclass, 'PCC']
+            df_pred_PAC.loc[iclass, itestset] = df_bias.loc[iclass, 'PAC']
 
-    fig, ax = plt.subplots()
-    plt.figure(figsize=(9, 10))
-    plt.xlabel('N_true')
-    plt.ylabel('N_pred')
+    fig, ax = plt.subplots(figsize=(10, 10))
+    # plt.figure(figsize=(9, 10))
+    ax.set_xlabel('N_true')
+    ax.set_ylabel('N_pred')
     random.seed(100)
     colors = distinctipy.get_colors(len(classes), pastel_factor=0.7)
-    for iclass, c in zip(classes, colors):
-        plt.scatter(df_true.loc[iclass], df_pred.loc[iclass], label=iclass, color=c)
-    plt.axline((0, 0), slope=1, c='red')
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), fancybox=True, shadow=True, ncol=5)
+    ax2 = fig.add_axes([.2, .6, .25, .25])
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    ax2.set_xlabel('N_true')
+    ax2.set_ylabel('N_pred')
+
+    ax.scatter(df_true, df_pred, label='CC', color='deepskyblue')
+    ax.scatter(df_true, df_pred_AC, label='AC', color='orange')
+    ax.scatter(df_true, df_pred_PCC, label='PCC', color='darkviolet')
+    ax.scatter(df_true, df_pred_PAC, label='PAC', color='olive')
+    ax2.scatter(df_true, df_pred, label='CC', color='deepskyblue')
+    ax2.scatter(df_true, df_pred_AC, label='AC', color='orange')
+    ax2.scatter(df_true, df_pred_PCC, label='PCC', color='darkviolet')
+    ax2.scatter(df_true, df_pred_PAC, label='PAC', color='olive')
+
+    # for iclass, c in zip(classes, colors):
+    #     ax.scatter(df_true.loc[iclass], df_pred.loc[iclass], label=iclass, color=c)
+    #     ax.scatter(df_true.loc[iclass], df_pred_AC.loc[iclass], label=iclass, color=c, marker='+')
+    #     ax2.scatter(df_true.loc[iclass], df_pred.loc[iclass], label=iclass, color=c)
+    #     ax2.scatter(df_true.loc[iclass], df_pred_AC.loc[iclass], label=iclass, color=c, marker='+')
+
+    ax2.axline((0, 0), slope=1, c='red')
+    ax.axline((0, 0), (1000, 1000), c='red')
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), fancybox=True, shadow=True, ncol=10)
+    ax2.set_xlim([-50, 1000])
+    ax2.set_ylim([-50, 1000])
+    ax.set_xlim([1, 1000])
+    ax.set_ylim([1, 1000])
     # plt.axis('square')
     # ax.set_aspect('equal', 'datalim')
-    plt.xlim([-50, 800])
-    plt.ylim([-50, 800])
-    plt.tight_layout()
+    # plt.tight_layout()
     Path(outpath).mkdir(parents=True, exist_ok=True)
     plt.savefig(outpath + 'population_scatter.png', dpi=300)
     plt.close()
@@ -207,7 +236,7 @@ parser.add_argument('-outpath', help='path for saving the figure')
 args = parser.parse_args()
 
 if __name__ == '__main__':
-    baseline_performance(args.datasets, args.F1_txt_paths, args.outpath)
-    prediction_confidence(args.datasets, args.confidence_csv_paths, args.outpath)
-    abundance_distance_performance(args.testsets, args.train_F1_txt_path, args.test_F1_txt_paths, args.outpath)
+    # baseline_performance(args.datasets, args.F1_txt_paths, args.outpath)
+    # prediction_confidence(args.datasets, args.confidence_csv_paths, args.outpath)
+    # abundance_distance_performance(args.testsets, args.train_F1_txt_path, args.test_F1_txt_paths, args.outpath)
     population_scatter(args.testsets, args.test_bias_xlsx_paths, args.outpath)

@@ -115,7 +115,7 @@ class CreateDataForPlankton:
     def create_data_loaders_with_y(self, test_main):
         # self.checkpoint_path = test_main.params.model_path
 
-        test_dataset = CreateDataset_with_y(X=self.X_train, y=self.y_train)
+        test_dataset = CreateDataset_with_y(X=self.X_train, y=self.y_train, TTA_type=test_main.params.TTA_type)
         self.test_dataloader = DataLoader(test_dataset, 32, shuffle=False, num_workers=4,
                                           pin_memory=True)
         # torch.save(test_dataset, test_main.params.main_param_path + '/test_dataloader.pt')
@@ -153,10 +153,11 @@ class CreateDataset(Dataset):
 class CreateDataset_with_y(Dataset):
     """Characterizes a dataset for PyTorch"""
 
-    def __init__(self, X, y):
+    def __init__(self, X, y, TTA_type):
         """Initialization"""
         self.X = X
         self.y = y
+        self.TTA_type = TTA_type
 
     def __len__(self):
         """Denotes the total number of samples"""
@@ -167,10 +168,16 @@ class CreateDataset_with_y(Dataset):
         # Select sample
         image = self.X[index]
         label = self.y[index]
-        X = self.transform(image)
+        TTA_type = self.TTA_type
+        if TTA_type == 0:
+            X = self.transform(image)
+        elif TTA_type == 1:
+            X = self.transform_TTA_1(image)
+        elif TTA_type == 2:
+            X = self.transform_TTA_2(image)
+        elif TTA_type == 3:
+            X = self.transform_TTA_3(image)
         y = label
-        #         y = self.transform_y(label)
-        #         sample = {'image': X, 'label': label}
         sample = [X, y]
         return sample
 
@@ -179,3 +186,25 @@ class CreateDataset_with_y(Dataset):
         T.Resize(224),
         T.ToTensor()])
     transform_y = T.Compose([T.ToTensor()])
+
+    transform_TTA_1 = T.Compose([
+        T.ToPILImage(),
+        T.Resize(224),
+        T.RandomHorizontalFlip(p=1),
+        T.ToTensor()])
+    transform_TTA_1_y = T.Compose([T.ToTensor()])
+
+    transform_TTA_2 = T.Compose([
+        T.ToPILImage(),
+        T.Resize(224),
+        T.RandomRotation(degrees=(0, 360)),
+        T.ToTensor()])
+    transform_TTA_2_y = T.Compose([T.ToTensor()])
+
+    transform_TTA_3 = T.Compose([
+        T.ToPILImage(),
+        T.Resize(224),
+        T.RandomHorizontalFlip(p=1),
+        T.RandomRotation(degrees=(0, 360)),
+        T.ToTensor()])
+    transform_TTA_3_y = T.Compose([T.ToTensor()])
