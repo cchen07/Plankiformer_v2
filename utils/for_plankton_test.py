@@ -187,6 +187,7 @@ class CreateDataset_with_y(Dataset):
         T.ToTensor()])
     transform_y = T.Compose([T.ToTensor()])
 
+    ## Test-time augmentations
     transform_TTA_1 = T.Compose([
         T.ToPILImage(),
         T.Resize(224),

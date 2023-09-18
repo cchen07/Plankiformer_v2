@@ -49,7 +49,7 @@ if __name__ == '__main__':
     # sdate.PlotSamplingDate_with_test(args.datapaths, args.outpath)
     # # abundance.PlotAbundance(args.datapaths, args.outpath, args.datapath_labels)
     # abundance.PlotAbundanceSep(args.datapaths, args.outpath, args.datapath_labels)
-    # abundance.PlotAbundance_with_test(args.datapaths, args.outpath, args.datapath_labels)
+    # abundance.PlotAbundance_overall(args.datapaths, args.outpath, args.datapath_labels)
 
     if args.global_x == 'no':
         if args.PCA == 'no':

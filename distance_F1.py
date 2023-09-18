@@ -40,7 +40,7 @@ def preprocess_F1_txt(F1_txt_path):
 
     return df_F1
 
-def plot_distance_F1_scatter(testsets, distance_txt_paths, F1_txt_paths, outpath, model, feature_or_pixel, PCA, threshold, distance_type):
+def dataframe_distance_f1(testsets, distance_txt_paths, F1_txt_paths, threshold):
     df = pd.DataFrame()
     for i in range(len(testsets)):
         df_distance = preprocess_distance_txt(distance_txt_paths[i])
@@ -48,15 +48,88 @@ def plot_distance_F1_scatter(testsets, distance_txt_paths, F1_txt_paths, outpath
         if threshold > 0:
             df_F1 = df_F1.drop(df_F1[df_F1['support'] < threshold].index)
             df_F1 = df_F1.reset_index(drop=True)
-        df_distance_F1 = pd.DataFrame(columns=['class','testset', 'distance', 'precision', 'recall', 'F1'], index=range(len(df_distance)))
+        df_distance_F1 = pd.DataFrame(columns=['class', 'testset', 'distance', 'precision', 'recall', 'F1'], index=range(len(df_distance)))
         df_distance_F1['class'] = df_distance['class']
         df_distance_F1['testset'] = testsets[i]
         df_distance_F1['distance'] = df_distance['distance']
         df_distance_F1['precision'] = df_F1['precision']
         df_distance_F1['recall'] = df_F1['recall']
         df_distance_F1['F1'] = df_F1['F1']
+        df_distance_F1['support'] = df_F1['support']
         df = pd.concat([df, df_distance_F1])
     df = df.reset_index(drop=True)
+
+    return df
+
+def dataframe_distance_f1_drop(testsets, distance_txt_paths, train_F1_txt_path, F1_txt_paths, threshold):
+    df = pd.DataFrame()
+    for i in range(len(testsets)):
+        df_distance = preprocess_distance_txt(distance_txt_paths[i])
+        df_F1 = preprocess_F1_txt(F1_txt_paths[i])
+        df_F1_train = preprocess_F1_txt(train_F1_txt_path)
+        if threshold > 0:
+            df_F1 = df_F1.drop(df_F1[df_F1['support'] < threshold].index)
+            df_F1 = df_F1.reset_index(drop=True)
+            df_F1_train = df_F1_train.drop(df_F1_train[df_F1_train['support'] < threshold].index)
+            df_F1_train = df_F1_train.reset_index(drop=True)
+        df_distance_F1 = pd.DataFrame(columns=['class','testset', 'precision', 'recall', 'F1'], index=range(len(df_distance)))
+        df_distance_F1['class'] = df_distance['class']
+        df_distance_F1['testset'] = testsets[i]
+        df_distance_F1['precision'] = df_F1['precision']
+        df_distance_F1['recall'] = df_F1['recall']
+        df_distance_F1['F1'] = df_F1['F1']
+        dict_test = {key:F1 for key, F1 in zip(df_F1['class'], df_F1['F1'])}
+        dict_train = {key:F1 for key, F1 in zip(df_F1_train['class'], df_F1_train['F1'])}
+        F1_drop = []
+        for i in dict_test.keys():
+            F1_drop_class = 1 - np.divide(dict_test[i], dict_train[i])
+            F1_drop.append(F1_drop_class)
+        df_distance_F1['F1_drop'] = F1_drop
+        
+        df_distance_F1['distance'] = df_distance['distance']
+        df = pd.concat([df, df_distance_F1])
+    df = df.reset_index(drop=True)
+
+    return df
+
+def dataframe_distance_f1_per_feature(testsets, distance_dfs, train_F1_txt_path, F1_txt_paths, threshold):
+    df = pd.DataFrame()
+    for i in range(len(testsets)):
+        df_distance = distance_dfs[i]
+        df_distance = df_distance.reset_index(level=0)
+        df_distance.columns.values[0] = 'class'
+        df_F1 = preprocess_F1_txt(F1_txt_paths[i])
+        df_F1_train = preprocess_F1_txt(train_F1_txt_path)
+        if threshold > 0:
+            df_F1 = df_F1.drop(df_F1[df_F1['support'] < threshold].index)
+            df_F1 = df_F1.reset_index(drop=True)
+            df_F1_train = df_F1_train.drop(df_F1_train[df_F1_train['support'] < threshold].index)
+            df_F1_train = df_F1_train.reset_index(drop=True)
+        df_distance_F1 = pd.DataFrame(columns=['class','testset', 'precision', 'recall', 'F1'], index=range(len(df_distance)))
+        df_distance_F1['class'] = df_distance['class']
+        df_distance_F1['testset'] = testsets[i]
+        df_distance_F1['precision'] = df_F1['precision']
+        df_distance_F1['recall'] = df_F1['recall']
+        df_distance_F1['F1'] = df_F1['F1']
+        dict_test = {key:F1 for key, F1 in zip(df_F1['class'], df_F1['F1'])}
+        dict_train = {key:F1 for key, F1 in zip(df_F1_train['class'], df_F1_train['F1'])}
+        F1_drop = []
+        for i in dict_test.keys():
+            F1_drop_class = 1 - np.divide(dict_test[i], dict_train[i])
+            F1_drop.append(F1_drop_class)
+        df_distance_F1['F1_drop'] = F1_drop
+        for idistance in df_distance.columns.values[1:]:
+            df_distance_F1[idistance] = df_distance[idistance]
+        # df_distance_F1['distance'] = df_distance['distance']
+        df = pd.concat([df, df_distance_F1])
+    df = df.reset_index(drop=True)
+    df['mean_distance'] = df.iloc[:, 6:].mean(axis=1)
+
+    return df
+
+def plot_distance_F1_scatter(testsets, distance_txt_paths, F1_txt_paths, outpath, model, feature_or_pixel, PCA, threshold, distance_type):
+    
+    df = dataframe_distance_f1(testsets, distance_txt_paths, F1_txt_paths, threshold)
 
     # F1
     plt.figure(figsize=(10, 10))
@@ -103,57 +176,9 @@ def plot_distance_F1_scatter(testsets, distance_txt_paths, F1_txt_paths, outpath
     #     plt.savefig(outpath + model + '_' + feature_or_pixel + '_' + distance_type + '_distance_recall_scatter_threshold_' + str(threshold) + '.png', dpi=300)
     # plt.close()
 
-def plot_distance(testsets, distance_txt_paths, outpath, feature_or_pixel, PCA, threshold, distance_type):
-    df = pd.DataFrame()
-    for i in range(len(testsets)):
-        df_distance = preprocess_distance_txt(distance_txt_paths[i])    
-        df_distance_testset = pd.DataFrame(columns=['class','testset', 'distance'], index=range(len(df_distance)))
-        df_distance_testset['class'] = df_distance['class']
-        df_distance_testset['testset'] = testsets[i]
-        df_distance_testset['distance'] = df_distance['distance']
-        df = pd.concat([df, df_distance_testset])
-    df = df.reset_index(drop=True)
-
-    classes = np.unique(df['class'])
-    df_plot = pd.DataFrame(columns=['ID_test', 'OOD1', 'OOD2', 'OOD3', 'OOD4', 'OOD5'], index=classes)
-
-    for index, row in df.iterrows():
-        df_plot.loc[row['class'], row['testset']] = row['distance']
-    
-    plt.figure(figsize=(10, 8))
-    plt.xlabel('class')
-    plt.ylabel('Distance to training set ' + '(' + feature_or_pixel + ')')
-    plt.grid(alpha=0.5)
-    plt.xticks(range(len(classes)), labels=classes, rotation=45, rotation_mode='anchor', ha='right')
-    for column in df_plot:
-        plt.scatter(x=range(len(df_plot)), y=df_plot[column], label=column, s=10)
-    plt.scatter(x=range(len(df_plot)), y=df_plot.mean(axis=1), label='average', s=50, c='red')
-    plt.legend(loc=8, bbox_to_anchor=(0.5, -0.3), fancybox=True, shadow=True, ncol=7)
-    plt.tight_layout()
-    Path(outpath).mkdir(parents=True, exist_ok=True)
-    if PCA == 'yes':
-        plt.savefig(outpath + feature_or_pixel + '_PCA_' + distance_type + '_distance_class_threshold_' + str(threshold) + '.png', dpi=300)
-    elif PCA == 'no':
-        plt.savefig(outpath + feature_or_pixel + '_' + distance_type + '_distance_class_threshold_' + str(threshold) + '.png', dpi=300)
-    plt.close()
-
 def plot_distance_F1_err(testsets, distance_txt_paths, F1_txt_paths, outpath, model, feature_or_pixel, PCA, threshold, distance_type):
-    df = pd.DataFrame()
-    for i in range(len(testsets)):
-        df_distance = preprocess_distance_txt(distance_txt_paths[i])
-        df_F1 = preprocess_F1_txt(F1_txt_paths[i])
-        if threshold > 0:
-            df_F1 = df_F1.drop(df_F1[df_F1['support'] < threshold].index)
-            df_F1 = df_F1.reset_index(drop=True)
-        df_distance_F1 = pd.DataFrame(columns=['class','testset', 'distance', 'precision', 'recall', 'F1'], index=range(len(df_distance)))
-        df_distance_F1['class'] = df_distance['class']
-        df_distance_F1['testset'] = testsets[i]
-        df_distance_F1['distance'] = df_distance['distance']
-        df_distance_F1['precision'] = df_F1['precision']
-        df_distance_F1['recall'] = df_F1['recall']
-        df_distance_F1['F1'] = df_F1['F1']
-        df = pd.concat([df, df_distance_F1])
-    df = df.reset_index(drop=True)
+    
+    df = dataframe_distance_f1(testsets, distance_txt_paths, F1_txt_paths, threshold)
 
     F1_mean = []
     F1_std = []
@@ -246,24 +271,8 @@ def plot_distance_F1_err(testsets, distance_txt_paths, F1_txt_paths, outpath, mo
 
 def plot_distance_F1_testset(testsets, distance_txt_paths, F1_txt_paths, outpath, model, feature_or_pixel, PCA, threshold, distance_type, class_filter):
     print('------------plotting global correlation of distance and F1 (PCA: {}, threshold: {}, distance: {}, class_filter: {})------------'.format(PCA, threshold, distance_type, class_filter))
-    df = pd.DataFrame()
-    for i in range(len(testsets)):
-        df_distance = preprocess_distance_txt(distance_txt_paths[i])
-        df_F1 = preprocess_F1_txt(F1_txt_paths[i])
-        if threshold > 0:
-            df_F1 = df_F1.drop(df_F1[df_F1['support'] < threshold].index)
-            df_F1 = df_F1.reset_index(drop=True)
-        df_distance_F1 = pd.DataFrame(columns=['class', 'testset', 'distance', 'precision', 'recall', 'F1'], index=range(len(df_distance)))
-        df_distance_F1['class'] = df_distance['class']
-        df_distance_F1['testset'] = testsets[i]
-        df_distance_F1['distance'] = df_distance['distance']
-        df_distance_F1['precision'] = df_F1['precision']
-        df_distance_F1['recall'] = df_F1['recall']
-        df_distance_F1['F1'] = df_F1['F1']
-        df_distance_F1['support'] = df_F1['support']
-        df = pd.concat([df, df_distance_F1])
-
-    df = df.reset_index(drop=True)
+    
+    df = dataframe_distance_f1(testsets, distance_txt_paths, F1_txt_paths, threshold)
 
     if class_filter == 'yes':
         df_ID = df[df['testset'] == 'ID_test']
@@ -467,24 +476,8 @@ def plot_distance_F1_testset(testsets, distance_txt_paths, F1_txt_paths, outpath
 
 def plot_distance_F1_class(testsets, distance_txt_paths, F1_txt_paths, outpath, model, feature_or_pixel, PCA, threshold, distance_type, class_filter):
     print('------------plotting global correlation of distance and F1 (PCA: {}, threshold: {}, distance: {}, class_filter: {})------------'.format(PCA, threshold, distance_type, class_filter))
-    df = pd.DataFrame()
-    for i in range(len(testsets)):
-        df_distance = preprocess_distance_txt(distance_txt_paths[i])
-        df_F1 = preprocess_F1_txt(F1_txt_paths[i])
-        if threshold > 0:
-            df_F1 = df_F1.drop(df_F1[df_F1['support'] < threshold].index)
-            df_F1 = df_F1.reset_index(drop=True)
-        df_distance_F1 = pd.DataFrame(columns=['class', 'testset', 'distance', 'precision', 'recall', 'F1'], index=range(len(df_distance)))
-        df_distance_F1['class'] = df_distance['class']
-        df_distance_F1['testset'] = testsets[i]
-        df_distance_F1['distance'] = df_distance['distance']
-        df_distance_F1['precision'] = df_F1['precision']
-        df_distance_F1['recall'] = df_F1['recall']
-        df_distance_F1['F1'] = df_F1['F1']
-        df_distance_F1['support'] = df_F1['support']
-        df = pd.concat([df, df_distance_F1])
-
-    df = df.reset_index(drop=True)
+    
+    df = dataframe_distance_f1(testsets, distance_txt_paths, F1_txt_paths, threshold)
 
     if class_filter == 'yes':
         df_ID = df[df['testset'] == 'ID_test']
@@ -677,33 +670,8 @@ def plot_distance_F1_class(testsets, distance_txt_paths, F1_txt_paths, outpath, 
 
 def plot_distance_F1_drop_testset(testsets, distance_txt_paths, train_F1_txt_path, F1_txt_paths, outpath, model, feature_or_pixel, PCA, threshold, distance_type, class_filter):    
     print('------------plotting global correlation of distance and F1 drop (PCA: {}, threshold: {}, distance: {}, class_filter: {})------------'.format(PCA, threshold, distance_type, class_filter))
-    df = pd.DataFrame()
-    for i in range(len(testsets)):
-        df_distance = preprocess_distance_txt(distance_txt_paths[i])
-        df_F1 = preprocess_F1_txt(F1_txt_paths[i])
-        df_F1_train = preprocess_F1_txt(train_F1_txt_path)
-        if threshold > 0:
-            df_F1 = df_F1.drop(df_F1[df_F1['support'] < threshold].index)
-            df_F1 = df_F1.reset_index(drop=True)
-            df_F1_train = df_F1_train.drop(df_F1_train[df_F1_train['support'] < threshold].index)
-            df_F1_train = df_F1_train.reset_index(drop=True)
-        df_distance_F1 = pd.DataFrame(columns=['class','testset', 'precision', 'recall', 'F1'], index=range(len(df_distance)))
-        df_distance_F1['class'] = df_distance['class']
-        df_distance_F1['testset'] = testsets[i]
-        df_distance_F1['precision'] = df_F1['precision']
-        df_distance_F1['recall'] = df_F1['recall']
-        df_distance_F1['F1'] = df_F1['F1']
-        dict_test = {key:F1 for key, F1 in zip(df_F1['class'], df_F1['F1'])}
-        dict_train = {key:F1 for key, F1 in zip(df_F1_train['class'], df_F1_train['F1'])}
-        F1_drop = []
-        for i in dict_test.keys():
-            F1_drop_class = 1 - np.divide(dict_test[i], dict_train[i])
-            F1_drop.append(F1_drop_class)
-        df_distance_F1['F1_drop'] = F1_drop
-        
-        df_distance_F1['distance'] = df_distance['distance']
-        df = pd.concat([df, df_distance_F1])
-    df = df.reset_index(drop=True)
+    
+    df = dataframe_distance_f1_drop(testsets, distance_txt_paths, train_F1_txt_path, F1_txt_paths, threshold)
     
     if class_filter == 'yes':
         df_ID = df[df['testset'] == 'ID_test']
@@ -836,33 +804,8 @@ def plot_distance_F1_drop_testset(testsets, distance_txt_paths, train_F1_txt_pat
 
 def plot_distance_F1_drop_class(testsets, distance_txt_paths, train_F1_txt_path, F1_txt_paths, outpath, model, feature_or_pixel, PCA, threshold, distance_type, class_filter):    
     print('------------plotting global correlation of distance and F1 drop (PCA: {}, threshold: {}, distance: {}, class_filter: {})------------'.format(PCA, threshold, distance_type, class_filter))
-    df = pd.DataFrame()
-    for i in range(len(testsets)):
-        df_distance = preprocess_distance_txt(distance_txt_paths[i])
-        df_F1 = preprocess_F1_txt(F1_txt_paths[i])
-        df_F1_train = preprocess_F1_txt(train_F1_txt_path)
-        if threshold > 0:
-            df_F1 = df_F1.drop(df_F1[df_F1['support'] < threshold].index)
-            df_F1 = df_F1.reset_index(drop=True)
-            df_F1_train = df_F1_train.drop(df_F1_train[df_F1_train['support'] < threshold].index)
-            df_F1_train = df_F1_train.reset_index(drop=True)
-        df_distance_F1 = pd.DataFrame(columns=['class','testset', 'precision', 'recall', 'F1'], index=range(len(df_distance)))
-        df_distance_F1['class'] = df_distance['class']
-        df_distance_F1['testset'] = testsets[i]
-        df_distance_F1['precision'] = df_F1['precision']
-        df_distance_F1['recall'] = df_F1['recall']
-        df_distance_F1['F1'] = df_F1['F1']
-        dict_test = {key:F1 for key, F1 in zip(df_F1['class'], df_F1['F1'])}
-        dict_train = {key:F1 for key, F1 in zip(df_F1_train['class'], df_F1_train['F1'])}
-        F1_drop = []
-        for i in dict_test.keys():
-            F1_drop_class = 1 - np.divide(dict_test[i], dict_train[i])
-            F1_drop.append(F1_drop_class)
-        df_distance_F1['F1_drop'] = F1_drop
-        
-        df_distance_F1['distance'] = df_distance['distance']
-        df = pd.concat([df, df_distance_F1])
-    df = df.reset_index(drop=True)
+    
+    df = dataframe_distance_f1_drop(testsets, distance_txt_paths, train_F1_txt_path, F1_txt_paths, threshold)
     
     if class_filter == 'yes':
         df_ID = df[df['testset'] == 'ID_test']
@@ -1028,37 +971,8 @@ def plot_distance_F1_drop_class(testsets, distance_txt_paths, train_F1_txt_path,
 
 def plot_distance_F1_drop(testsets, distance_dfs, train_F1_txt_path, F1_txt_paths, outpath, model, feature_or_pixel, PCA, threshold, distance_type, class_filter):
     print('------------plotting correlation of distance and F1 drop per component (PCA: {}, threshold: {}, distance: {}, class_filter: {})------------'.format(PCA, threshold, distance_type, class_filter))
-    df = pd.DataFrame()
-    for i in range(len(testsets)):
-        df_distance = distance_dfs[i]
-        df_distance = df_distance.reset_index(level=0)
-        df_distance.columns.values[0] = 'class'
-        df_F1 = preprocess_F1_txt(F1_txt_paths[i])
-        df_F1_train = preprocess_F1_txt(train_F1_txt_path)
-        if threshold > 0:
-            df_F1 = df_F1.drop(df_F1[df_F1['support'] < threshold].index)
-            df_F1 = df_F1.reset_index(drop=True)
-            df_F1_train = df_F1_train.drop(df_F1_train[df_F1_train['support'] < threshold].index)
-            df_F1_train = df_F1_train.reset_index(drop=True)
-        df_distance_F1 = pd.DataFrame(columns=['class','testset', 'precision', 'recall', 'F1'], index=range(len(df_distance)))
-        df_distance_F1['class'] = df_distance['class']
-        df_distance_F1['testset'] = testsets[i]
-        df_distance_F1['precision'] = df_F1['precision']
-        df_distance_F1['recall'] = df_F1['recall']
-        df_distance_F1['F1'] = df_F1['F1']
-        dict_test = {key:F1 for key, F1 in zip(df_F1['class'], df_F1['F1'])}
-        dict_train = {key:F1 for key, F1 in zip(df_F1_train['class'], df_F1_train['F1'])}
-        F1_drop = []
-        for i in dict_test.keys():
-            F1_drop_class = 1 - np.divide(dict_test[i], dict_train[i])
-            F1_drop.append(F1_drop_class)
-        df_distance_F1['F1_drop'] = F1_drop
-        for idistance in df_distance.columns.values[1:]:
-            df_distance_F1[idistance] = df_distance[idistance]
-        # df_distance_F1['distance'] = df_distance['distance']
-        df = pd.concat([df, df_distance_F1])
-    df = df.reset_index(drop=True)
-    df['mean_distance'] = df.iloc[:, 6:].mean(axis=1)
+    
+    df = dataframe_distance_f1_per_feature(testsets, distance_dfs, train_F1_txt_path, F1_txt_paths, threshold)
 
     if class_filter == 'yes':
         df_ID = df[df['testset'] == 'ID_test']
@@ -1120,37 +1034,8 @@ def plot_distance_F1_drop(testsets, distance_dfs, train_F1_txt_path, F1_txt_path
 
 def plot_distance_F1(testsets, distance_dfs, train_F1_txt_path, F1_txt_paths, outpath, model, feature_or_pixel, PCA, threshold, distance_type, class_filter):
     print('------------plotting correlation of distance and F1 per component (PCA: {}, threshold: {}, distance: {}, class_filter: {})------------'.format(PCA, threshold, distance_type, class_filter))
-    df = pd.DataFrame()
-    for i in range(len(testsets)):
-        df_distance = distance_dfs[i]
-        df_distance = df_distance.reset_index(level=0)
-        df_distance.columns.values[0] = 'class'
-        df_F1 = preprocess_F1_txt(F1_txt_paths[i])
-        df_F1_train = preprocess_F1_txt(train_F1_txt_path)
-        if threshold > 0:
-            df_F1 = df_F1.drop(df_F1[df_F1['support'] < threshold].index)
-            df_F1 = df_F1.reset_index(drop=True)
-            df_F1_train = df_F1_train.drop(df_F1_train[df_F1_train['support'] < threshold].index)
-            df_F1_train = df_F1_train.reset_index(drop=True)
-        df_distance_F1 = pd.DataFrame(columns=['class','testset', 'precision', 'recall', 'F1'], index=range(len(df_distance)))
-        df_distance_F1['class'] = df_distance['class']
-        df_distance_F1['testset'] = testsets[i]
-        df_distance_F1['precision'] = df_F1['precision']
-        df_distance_F1['recall'] = df_F1['recall']
-        df_distance_F1['F1'] = df_F1['F1']
-        dict_test = {key:F1 for key, F1 in zip(df_F1['class'], df_F1['F1'])}
-        dict_train = {key:F1 for key, F1 in zip(df_F1_train['class'], df_F1_train['F1'])}
-        F1_drop = []
-        for i in dict_test.keys():
-            F1_drop_class = 1 - np.divide(dict_test[i], dict_train[i])
-            F1_drop.append(F1_drop_class)
-        df_distance_F1['F1_drop'] = F1_drop
-        for idistance in df_distance.columns.values[1:]:
-            df_distance_F1[idistance] = df_distance[idistance]
-        # df_distance_F1['distance'] = df_distance['distance']
-        df = pd.concat([df, df_distance_F1])
-    df = df.reset_index(drop=True)
-    df['mean_distance'] = df.iloc[:, 6:].mean(axis=1)
+    
+    df = dataframe_distance_f1_per_feature(testsets, distance_dfs, train_F1_txt_path, F1_txt_paths, threshold)
 
     if class_filter == 'yes':
         df_ID = df[df['testset'] == 'ID_test']
@@ -1212,37 +1097,8 @@ def plot_distance_F1(testsets, distance_dfs, train_F1_txt_path, F1_txt_paths, ou
 
 def plot_distance_F1_drop_per_class_per_component(testsets, distance_dfs, train_F1_txt_path, F1_txt_paths, outpath, model, feature_or_pixel, PCA, threshold, distance_type, class_filter):
     print('------------plotting correlation of distance and F1 drop per component per class (PCA: {}, threshold: {}, distance: {}, class_filter: {})------------'.format(PCA, threshold, distance_type, class_filter))
-    df = pd.DataFrame()
-    for i in range(len(testsets)):
-        df_distance = distance_dfs[i]
-        df_distance = df_distance.reset_index(level=0)
-        df_distance.columns.values[0] = 'class'
-        df_F1 = preprocess_F1_txt(F1_txt_paths[i])
-        df_F1_train = preprocess_F1_txt(train_F1_txt_path)
-        if threshold > 0:
-            df_F1 = df_F1.drop(df_F1[df_F1['support'] < threshold].index)
-            df_F1 = df_F1.reset_index(drop=True)
-            df_F1_train = df_F1_train.drop(df_F1_train[df_F1_train['support'] < threshold].index)
-            df_F1_train = df_F1_train.reset_index(drop=True)
-        df_distance_F1 = pd.DataFrame(columns=['class','testset', 'precision', 'recall', 'F1'], index=range(len(df_distance)))
-        df_distance_F1['class'] = df_distance['class']
-        df_distance_F1['testset'] = testsets[i]
-        df_distance_F1['precision'] = df_F1['precision']
-        df_distance_F1['recall'] = df_F1['recall']
-        df_distance_F1['F1'] = df_F1['F1']
-        dict_test = {key:F1 for key, F1 in zip(df_F1['class'], df_F1['F1'])}
-        dict_train = {key:F1 for key, F1 in zip(df_F1_train['class'], df_F1_train['F1'])}
-        F1_drop = []
-        for i in dict_test.keys():
-            F1_drop_class = 1 - np.divide(dict_test[i], dict_train[i])
-            F1_drop.append(F1_drop_class)
-        df_distance_F1['F1_drop'] = F1_drop
-        for idistance in df_distance.columns.values[1:]:
-            df_distance_F1[idistance] = df_distance[idistance]
-        # df_distance_F1['distance'] = df_distance['distance']
-        df = pd.concat([df, df_distance_F1])
-    df = df.reset_index(drop=True)
-    df['mean_distance'] = df.iloc[:, 6:].mean(axis=1)
+    
+    df = dataframe_distance_f1_per_feature(testsets, distance_dfs, train_F1_txt_path, F1_txt_paths, threshold)
     
     if class_filter == 'yes':
         df_ID = df[df['testset'] == 'ID_test']
@@ -1316,37 +1172,8 @@ def plot_distance_F1_drop_per_class_per_component(testsets, distance_dfs, train_
     
 def plot_distance_F1_per_class_per_component(testsets, distance_dfs, train_F1_txt_path, F1_txt_paths, outpath, model, feature_or_pixel, PCA, threshold, distance_type, class_filter):
     print('------------plotting correlation of distance and F1 per component per class (PCA: {}, threshold: {}, distance: {}, class_filter: {})------------'.format(PCA, threshold, distance_type, class_filter))
-    df = pd.DataFrame()
-    for i in range(len(testsets)):
-        df_distance = distance_dfs[i]
-        df_distance = df_distance.reset_index(level=0)
-        df_distance.columns.values[0] = 'class'
-        df_F1 = preprocess_F1_txt(F1_txt_paths[i])
-        df_F1_train = preprocess_F1_txt(train_F1_txt_path)
-        if threshold > 0:
-            df_F1 = df_F1.drop(df_F1[df_F1['support'] < threshold].index)
-            df_F1 = df_F1.reset_index(drop=True)
-            df_F1_train = df_F1_train.drop(df_F1_train[df_F1_train['support'] < threshold].index)
-            df_F1_train = df_F1_train.reset_index(drop=True)
-        df_distance_F1 = pd.DataFrame(columns=['class','testset', 'precision', 'recall', 'F1'], index=range(len(df_distance)))
-        df_distance_F1['class'] = df_distance['class']
-        df_distance_F1['testset'] = testsets[i]
-        df_distance_F1['precision'] = df_F1['precision']
-        df_distance_F1['recall'] = df_F1['recall']
-        df_distance_F1['F1'] = df_F1['F1']
-        dict_test = {key:F1 for key, F1 in zip(df_F1['class'], df_F1['F1'])}
-        dict_train = {key:F1 for key, F1 in zip(df_F1_train['class'], df_F1_train['F1'])}
-        F1_drop = []
-        for i in dict_test.keys():
-            F1_drop_class = 1 - np.divide(dict_test[i], dict_train[i])
-            F1_drop.append(F1_drop_class)
-        df_distance_F1['F1_drop'] = F1_drop
-        for idistance in df_distance.columns.values[1:]:
-            df_distance_F1[idistance] = df_distance[idistance]
-        # df_distance_F1['distance'] = df_distance['distance']
-        df = pd.concat([df, df_distance_F1])
-    df = df.reset_index(drop=True)
-    df['mean_distance'] = df.iloc[:, 6:].mean(axis=1)
+    
+    df = dataframe_distance_f1_per_feature(testsets, distance_dfs, train_F1_txt_path, F1_txt_paths, threshold)
     
     if class_filter == 'yes':
         df_ID = df[df['testset'] == 'ID_test']
@@ -1569,6 +1396,40 @@ def plot_distance_F1_x(testsets, distance_dfs, train_F1_txt_path, F1_txt_paths, 
         plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_F1_per_feature_x.png', dpi=300)
     elif PCA == 'no':
         plt.savefig(outpath + model + '_' + feature_or_pixel + '_' + distance_type + '_distance_F1_per_feature_x.png', dpi=300)
+    plt.close()
+
+def plot_distance(testsets, distance_txt_paths, outpath, feature_or_pixel, PCA, threshold, distance_type):
+    df = pd.DataFrame()
+    for i in range(len(testsets)):
+        df_distance = preprocess_distance_txt(distance_txt_paths[i])    
+        df_distance_testset = pd.DataFrame(columns=['class','testset', 'distance'], index=range(len(df_distance)))
+        df_distance_testset['class'] = df_distance['class']
+        df_distance_testset['testset'] = testsets[i]
+        df_distance_testset['distance'] = df_distance['distance']
+        df = pd.concat([df, df_distance_testset])
+    df = df.reset_index(drop=True)
+
+    classes = np.unique(df['class'])
+    df_plot = pd.DataFrame(columns=['ID_test', 'OOD1', 'OOD2', 'OOD3', 'OOD4', 'OOD5'], index=classes)
+
+    for index, row in df.iterrows():
+        df_plot.loc[row['class'], row['testset']] = row['distance']
+    
+    plt.figure(figsize=(10, 8))
+    plt.xlabel('class')
+    plt.ylabel('Distance to training set ' + '(' + feature_or_pixel + ')')
+    plt.grid(alpha=0.5)
+    plt.xticks(range(len(classes)), labels=classes, rotation=45, rotation_mode='anchor', ha='right')
+    for column in df_plot:
+        plt.scatter(x=range(len(df_plot)), y=df_plot[column], label=column, s=10)
+    plt.scatter(x=range(len(df_plot)), y=df_plot.mean(axis=1), label='average', s=50, c='red')
+    plt.legend(loc=8, bbox_to_anchor=(0.5, -0.3), fancybox=True, shadow=True, ncol=7)
+    plt.tight_layout()
+    Path(outpath).mkdir(parents=True, exist_ok=True)
+    if PCA == 'yes':
+        plt.savefig(outpath + feature_or_pixel + '_PCA_' + distance_type + '_distance_class_threshold_' + str(threshold) + '.png', dpi=300)
+    elif PCA == 'no':
+        plt.savefig(outpath + feature_or_pixel + '_' + distance_type + '_distance_class_threshold_' + str(threshold) + '.png', dpi=300)
     plt.close()
 
 

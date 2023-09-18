@@ -50,6 +50,7 @@ class import_and_train_model:
         classes = data_loader.classes
         num_classes = len(np.unique(classes))
 
+        ## Select backbone models
         if train_main.params.architecture == 'deit':
             self.model = timm.create_model('deit_base_distilled_patch16_224.fb_in1k', pretrained=True,
                                            num_classes=num_classes)
@@ -89,7 +90,7 @@ class import_and_train_model:
         else:
             print('This model cannot be imported. Please check from the list of models')
 
-        # additional layers
+        ## Additional layers
         if train_main.params.add_layer == 'yes':
             if train_main.params.architecture == 'deit':
                 in_features = self.model.get_classifier()[-1].in_features
@@ -492,6 +493,7 @@ class import_and_train_model:
                     train_losses = train_l + train_losses
                     test_losses = test_l + test_losses
 
+                ## Save real-time training curve
                 plt.figure(figsize=(15, 4))
                 plt.subplot(1, 3, 1)
                 plt.plot(range(1, len(train_accuracies) + 1), train_accuracies, label='Train accuracy')
@@ -678,6 +680,7 @@ class import_and_train_model:
                     train_f1s = train_f + train_f1s
                     train_losses = train_l + train_losses
 
+                ## Save real-time training curve
                 plt.figure(figsize=(15, 4))
                 plt.subplot(1, 3, 1)
                 plt.plot(range(1, len(train_accuracies) + 1), train_accuracies, label='Train accuracy')

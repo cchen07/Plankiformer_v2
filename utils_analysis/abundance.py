@@ -52,10 +52,10 @@ def PlotAbundanceSep(datapaths, outpath, datapath_labels):
         ax.clear()
 
 
-def PlotAbundance_with_test(datapaths, outpath, datapath_labels):
-    '''plot the abundance of datasets'''
+def PlotAbundance_overall(datapaths, outpath, datapath_labels):
+    '''plot the overall abundance of datasets'''
 
-    print('-----------------Now plotting abundance distributions of each dataset.-----------------')
+    print('-----------------Now plotting overall abundance distributions of each dataset.-----------------')
 
     list_class_all = ['aphanizomenon', 'asplanchna', 'asterionella', 'bosmina', 'ceratium',
                      'chaoborus', 'collotheca', 'conochilus', 'copepod_skins', 'cyclops', 'daphnia', 'daphnia_skins', 

@@ -57,7 +57,7 @@ def PlotSamplingDate(train_datapath, outpath):
 
 def PlotSamplingDate_with_test(datapaths, outpath):
 
-    print('-----------------Now plotting sampling date of training set.-----------------')
+    print('-----------------Now plotting sampling date of training set with testing set.-----------------')
 
     # ax = plt.subplot(1, 1, 1)
     plt.figure(figsize=(10, 7))
