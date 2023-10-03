@@ -1316,9 +1316,9 @@ class import_and_train_model:
             ff.close()
 
             ID_result = pd.read_pickle(test_main.params.model_path[0] + '/GT_Pred_GTLabel_PredLabel_prob_model_' + name + '.pickle')
-            bias, BC, MAE, MSE, RMSE, R2, NAE, AE_rm_junk, NAE_rm_junk, df_count, BC_AC, BC_PCC, BC_PAC = extra_metrics(target_label.tolist(), output_label, prob, ID_result)
+            bias, BC, MAE, MSE, RMSE, R2, NMAE, AE_rm_junk, NAE_rm_junk, df_count, BC_AC, BC_PCC, BC_PAC = extra_metrics(target_label.tolist(), output_label, prob, ID_result)
             fff = open(test_main.params.test_outpath + 'Single_test_report_extra_' + name + '.txt', 'w')
-            fff.write('\nbias\n\n{}\n\nBC\n\n{}\n\nMAE\n\n{}\n\nMSE\n\n{}\n\nRMSE\n\n{}\n\nR2\n\n{}\n\nNAE\n\n{}\n\nAE_rm_junk\n\n{}\n\nNAE_rm_junk\n\n{}\n'.format(bias, BC, MAE, MSE, RMSE, R2, NAE, AE_rm_junk, NAE_rm_junk))
+            fff.write('\nbias\n\n{}\n\nBC\n\n{}\n\nMAE\n\n{}\n\nMSE\n\n{}\n\nRMSE\n\n{}\n\nR2\n\n{}\n\nNMAE\n\n{}\n\nAE_rm_junk\n\n{}\n\nNAE_rm_junk\n\n{}\n'.format(bias, BC, MAE, MSE, RMSE, R2, NMAE, AE_rm_junk, NAE_rm_junk))
             fff.close()
 
             df_count.to_excel(test_main.params.test_outpath + 'Population_count.xlsx', index=True, header=True)
@@ -1619,9 +1619,9 @@ class import_and_train_model:
             ff.close()
 
             ID_result = pd.read_pickle(test_main.params.model_path[0] + '/GT_Pred_GTLabel_PredLabel_prob_model_' + name + '.pickle')
-            bias, BC, MAE, MSE, RMSE, R2, NAE, AE_rm_junk, NAE_rm_junk, df_count, BC_AC, BC_PCC, BC_PAC = extra_metrics(GT_label.tolist(), Ens_DEIT_label, Ens_DEIT, ID_result)
+            bias, BC, MAE, MSE, RMSE, R2, NMAE, AE_rm_junk, NAE_rm_junk, df_count, BC_AC, BC_PCC, BC_PAC = extra_metrics(GT_label.tolist(), Ens_DEIT_label, Ens_DEIT, ID_result)
             fff = open(test_main.params.test_outpath + 'Ensemble_test_report_extra_' + name2 + name + '.txt', 'w')
-            fff.write('\nbias\n\n{}\n\nBC\n\n{}\n\nMAE\n\n{}\n\nMSE\n\n{}\n\nRMSE\n\n{}\n\nR2\n\n{}\n\nNAE\n\n{}\n\nAE_rm_junk\n\n{}\n\nNAE_rm_junk\n\n{}\n'.format(bias, BC, MAE, MSE, RMSE, R2, NAE, AE_rm_junk, NAE_rm_junk))
+            fff.write('\nbias\n\n{}\n\nBC\n\n{}\n\nMAE\n\n{}\n\nMSE\n\n{}\n\nRMSE\n\n{}\n\nR2\n\n{}\n\nNMAE\n\n{}\n\nAE_rm_junk\n\n{}\n\nNAE_rm_junk\n\n{}\n'.format(bias, BC, MAE, MSE, RMSE, R2, NMAE, AE_rm_junk, NAE_rm_junk))
             fff.close()
 
             df_count.to_excel(test_main.params.test_outpath + 'Population_count.xlsx', index=True, header=True)
@@ -2248,6 +2248,6 @@ def extra_metrics(GT_label, Pred_label, Pred_prob, ID_result):
 
     AE_rm_junk = np.sum(np.abs(df_count_Pred_GT_rm_junk['Predict'] - df_count_Pred_GT_rm_junk['Ground_truth']))
     NAE_rm_junk = np.sum(np.divide(np.abs(df_count_Pred_GT_rm_junk['Predict'] - df_count_Pred_GT_rm_junk['Ground_truth']), df_count_Pred_GT_rm_junk['Ground_truth']))
-    NAE = np.sum(np.divide(np.abs(df_count_Pred_GT_rm_0['Predict'] - df_count_Pred_GT_rm_0['Ground_truth']), df_count_Pred_GT_rm_0['Ground_truth']))
+    NMAE = np.mean(np.divide(np.abs(df_count_Pred_GT_rm_0['Predict'] - df_count_Pred_GT_rm_0['Ground_truth']), df_count_Pred_GT_rm_0['Ground_truth']))
 
-    return bias, BC, MAE, MSE, RMSE, R2, NAE, AE_rm_junk, NAE_rm_junk, df_count_Pred_GT, BC_AC, BC_PCC, BC_PAC
+    return bias, BC, MAE, MSE, RMSE, R2, NMAE, AE_rm_junk, NAE_rm_junk, df_count_Pred_GT, BC_AC, BC_PCC, BC_PAC

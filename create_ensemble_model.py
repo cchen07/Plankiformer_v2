@@ -191,9 +191,9 @@ class LoadEnsembleParameters:
         ff.close()
 
         ID_result = pd.read_pickle(self.params.main_model + '/GT_Pred_GTLabel_PredLabel_prob_model_' + name2 + '.pickle')
-        bias, BC, MAE, MSE, RMSE, R2, NAE, AE_rm_junk, NAE_rm_junk, df_count = extra_metrics(DEIT_GTLabel_sorted[0], Ens_DEIT_label, Ens_DEIT, ID_result)
+        bias, BC, MAE, MSE, RMSE, R2, NMAE, AE_rm_junk, NAE_rm_junk, df_count = extra_metrics(DEIT_GTLabel_sorted[0], Ens_DEIT_label, Ens_DEIT, ID_result)
         fff = open(self.params.outpath + 'Ensemble_test_report_extra_' + name + '_mean_' + name2 + '.txt', 'w')
-        fff.write('\nbias\n\n{}\n\nBC\n\n{}\n\nMAE\n\n{}\n\nMSE\n\n{}\n\nRMSE\n\n{}\n\nR2\n\n{}\n\nNAE\n\n{}\n\nAE_rm_junk\n\n{}\n\nNAE_rm_junk\n\n{}\n'.format(bias, BC, MAE, MSE, RMSE, R2, NAE, AE_rm_junk, NAE_rm_junk))
+        fff.write('\nbias\n\n{}\n\nBC\n\n{}\n\nMAE\n\n{}\n\nMSE\n\n{}\n\nRMSE\n\n{}\n\nR2\n\n{}\n\nNMAE\n\n{}\n\nAE_rm_junk\n\n{}\n\nNAE_rm_junk\n\n{}\n'.format(bias, BC, MAE, MSE, RMSE, R2, NMAE, AE_rm_junk, NAE_rm_junk))
         fff.close()
 
         df_count.to_excel(self.params.outpath + 'Population_count.xlsx', index=True, header=True)
@@ -293,9 +293,9 @@ def extra_metrics(GT_label, Pred_label, Pred_prob, ID_result):
 
     AE_rm_junk = np.sum(np.abs(df_count_Pred_GT_rm_junk['Predict'] - df_count_Pred_GT_rm_junk['Ground_truth']))
     NAE_rm_junk = np.sum(np.divide(np.abs(df_count_Pred_GT_rm_junk['Predict'] - df_count_Pred_GT_rm_junk['Ground_truth']), df_count_Pred_GT_rm_junk['Ground_truth']))
-    NAE = np.sum(np.divide(np.abs(df_count_Pred_GT_rm_0['Predict'] - df_count_Pred_GT_rm_0['Ground_truth']), df_count_Pred_GT_rm_0['Ground_truth']))
+    NMAE = np.mean(np.divide(np.abs(df_count_Pred_GT_rm_0['Predict'] - df_count_Pred_GT_rm_0['Ground_truth']), df_count_Pred_GT_rm_0['Ground_truth']))
 
-    return bias, BC, MAE, MSE, RMSE, R2, NAE, AE_rm_junk, NAE_rm_junk, df_count_Pred_GT
+    return bias, BC, MAE, MSE, RMSE, R2, NMAE, AE_rm_junk, NAE_rm_junk, df_count_Pred_GT
 
 if __name__ == '__main__':
     print('\n Running Ensemble', sys.argv[0], sys.argv[1:])
