@@ -142,7 +142,7 @@ def plot_distance_F1_scatter(testsets, distance_txt_paths, F1_txt_paths, outpath
     colors = distinctipy.get_colors(len(np.unique(df['class'])), pastel_factor=0.7)
     for iclass, c in zip(np.unique(df['class']), colors):
         plt.scatter(df[df['class'] == iclass].distance, df[df['class'] == iclass].F1, label=iclass, c=np.array([c]))
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     # plt.xlim(0, 1)
     # plt.ylim(0, 1)
 
@@ -165,7 +165,7 @@ def plot_distance_F1_scatter(testsets, distance_txt_paths, F1_txt_paths, outpath
     # colors = distinctipy.get_colors(len(np.unique(df['class'])), pastel_factor=0.7)
     # for iclass, c in zip(np.unique(df['class']), colors):
     #     plt.scatter(df[df['class'] == iclass].distance, df[df['class'] == iclass].recall, label=iclass, c=np.array([c]))
-    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     # # plt.xlim(0, 1)
     # # plt.ylim(0, 1)
     
@@ -334,7 +334,7 @@ def plot_distance_F1_testset(testsets, distance_txt_paths, F1_txt_paths, outpath
     y_fit = reg.predict(np.array(distance_mean).reshape(-1, 1))
     plt.plot(np.array(distance_mean), y_fit, color='red', label='regression line')
     # plt.title('r = %s' % round(correlation, 3))
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     plt.tight_layout()
     Path(outpath).mkdir(parents=True, exist_ok=True)
     if PCA == 'yes':
@@ -381,7 +381,7 @@ def plot_distance_F1_testset(testsets, distance_txt_paths, F1_txt_paths, outpath
     for quantile, y_pred in predictions.items():
         plt.plot(x.reshape(-1, 1), y_pred, label=f"Quantile: {quantile}", dashes=[6, 2])
 
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     # plt.title('r = %s' % round(correlation, 3))
     plt.tight_layout()
     if PCA == 'yes':
@@ -400,7 +400,7 @@ def plot_distance_F1_testset(testsets, distance_txt_paths, F1_txt_paths, outpath
     for i, (itestset, c) in enumerate(zip(testsets, colors)):
         plt.errorbar(x=distance_mean[i], y=F1_mean[i], xerr=distance_sem[i], yerr=F1_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=itestset + ' (mean)', c=np.array([c]))
         plt.scatter(x=df[df['testset'] == itestset].distance, y=df[df['testset'] == itestset].F1, label=itestset, alpha=0.6, c=np.array([c]))
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     plt.tight_layout()
     if PCA == 'yes':
         plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_F1_testset_scatter_err_threshold_' + str(threshold) + '.png', dpi=300)
@@ -545,7 +545,7 @@ def plot_distance_F1_class(testsets, distance_txt_paths, F1_txt_paths, outpath, 
     y_fit = reg.predict(np.array(distance_mean).reshape(-1, 1))
     plt.plot(np.array(distance_mean), y_fit, color='red', label='regression line')
     # plt.title('r = %s' % round(correlation, 3))
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     plt.tight_layout()
     Path(outpath).mkdir(parents=True, exist_ok=True)
     if PCA == 'yes':
@@ -554,7 +554,7 @@ def plot_distance_F1_class(testsets, distance_txt_paths, F1_txt_paths, outpath, 
         plt.savefig(outpath + model + '_' + feature_or_pixel + '_' + distance_type + '_distance_F1_class_err_threshold_' + str(threshold) + '.png', dpi=300)
     plt.close()
     
-    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     # plt.tight_layout()
     # Path(outpath).mkdir(parents=True, exist_ok=True)
     # if PCA == 'yes':
@@ -599,7 +599,7 @@ def plot_distance_F1_class(testsets, distance_txt_paths, F1_txt_paths, outpath, 
     for quantile, y_pred in predictions.items():
         plt.plot(x.reshape(-1, 1), y_pred, label=f"Quantile: {quantile}", dashes=[6, 2])
 
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     # plt.title('r = %s' % round(correlation, 3))
     plt.tight_layout()
     if PCA == 'yes':
@@ -616,7 +616,7 @@ def plot_distance_F1_class(testsets, distance_txt_paths, F1_txt_paths, outpath, 
     for i, (iclass, c) in enumerate(zip(classes, colors)):
         plt.errorbar(x=distance_mean[i], y=F1_mean[i], xerr=distance_sem[i], yerr=F1_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=iclass + ' (mean)', c=np.array([c]))
         plt.scatter(x=df[df['class'] == iclass].distance, y=df[df['class'] == iclass].F1, label=iclass, alpha=0.6, c=np.array([c]))
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     plt.tight_layout()
     if PCA == 'yes':
         plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_F1_class_scatter_err_threshold_' + str(threshold) + '.png', dpi=300)
@@ -639,8 +639,8 @@ def plot_distance_F1_class(testsets, distance_txt_paths, F1_txt_paths, outpath, 
         reg = LinearRegression().fit(x.reshape(-1, 1), y)
         y_fit = reg.predict(x.reshape(-1, 1))
         plt.plot(x, y_fit, color=np.array([c]))
-    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     plt.tight_layout()
     if PCA == 'yes':
         plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_F1_class_scatter_per_class_threshold_' + str(threshold) + '.png', dpi=300)
@@ -659,7 +659,7 @@ def plot_distance_F1_class(testsets, distance_txt_paths, F1_txt_paths, outpath, 
     # plt.ylabel('Recall')
     # for i, iclass in enumerate(classes):
     #     plt.errorbar(x=distance_mean[i], y=recall_mean[i], xerr=distance_sem[i], yerr=recall_sem[i], fmt='s', capsize=3, label=iclass)
-    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     # plt.tight_layout()
     # Path(outpath).mkdir(parents=True, exist_ok=True)
     # if PCA == 'yes':
@@ -711,7 +711,7 @@ def plot_distance_F1_drop_testset(testsets, distance_txt_paths, train_F1_txt_pat
         distance_sem.append(distance_sem_testset)
 
     # F1
-    plt.figure(figsize=(12, 12))
+    plt.figure(figsize=(9, 9))
     plt.subplot(1, 1, 1)
     plt.xlabel('Distance to training set')
     plt.ylabel('F1 drop ratio')
@@ -728,7 +728,7 @@ def plot_distance_F1_drop_testset(testsets, distance_txt_paths, train_F1_txt_pat
     y_fit = reg.predict(np.array(distance_mean).reshape(-1, 1))
     plt.plot(np.array(distance_mean), y_fit, color='red', label='regression line')
     # plt.title('r = %s' % round(correlation, 3))
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     plt.tight_layout()
     Path(outpath).mkdir(parents=True, exist_ok=True)
     if PCA == 'yes':
@@ -737,7 +737,7 @@ def plot_distance_F1_drop_testset(testsets, distance_txt_paths, train_F1_txt_pat
         plt.savefig(outpath + model + '_' + feature_or_pixel + '_' + distance_type + '_distance_F1_drop_testset_err_threshold_' + str(threshold) + '.png', dpi=300)
     plt.close()
 
-    plt.figure(figsize=(12, 12))
+    plt.figure(figsize=(9, 10))
     plt.subplot(1, 1, 1)
     plt.xlabel('Distance to training set')
     plt.ylabel('F1 drop ratio')
@@ -775,7 +775,7 @@ def plot_distance_F1_drop_testset(testsets, distance_txt_paths, train_F1_txt_pat
     for quantile, y_pred in predictions.items():
         plt.plot(x.reshape(-1, 1), y_pred, label=f"Quantile: {quantile}", dashes=[6, 2])
 
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     # plt.title('r = %s' % round(correlation, 3))
     plt.tight_layout()
     if PCA == 'yes':
@@ -794,7 +794,7 @@ def plot_distance_F1_drop_testset(testsets, distance_txt_paths, train_F1_txt_pat
     for i, (itestset, c) in enumerate(zip(testsets, colors)):
         plt.errorbar(x=distance_mean[i], y=F1_drop_mean[i], xerr=distance_sem[i], yerr=F1_drop_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=itestset + ' (mean)', c=np.array([c]))
         plt.scatter(x=df[df['testset'] == itestset].distance, y=df[df['testset'] == itestset].F1_drop, label=itestset, alpha=0.6, c=np.array([c]))
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     plt.tight_layout()
     if PCA == 'yes':
         plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_F1_drop_testset_scatter_err_threshold_' + str(threshold) + '.png', dpi=300)
@@ -868,7 +868,7 @@ def plot_distance_F1_drop_class(testsets, distance_txt_paths, train_F1_txt_path,
     y_fit = reg.predict(np.array(distance_mean).reshape(-1, 1))
     plt.plot(np.array(distance_mean), y_fit, color='red', label='regression line')
     # plt.title('r = %s' % round(correlation, 3))
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     plt.tight_layout()
     Path(outpath).mkdir(parents=True, exist_ok=True)
     if PCA == 'yes':
@@ -877,7 +877,7 @@ def plot_distance_F1_drop_class(testsets, distance_txt_paths, train_F1_txt_path,
         plt.savefig(outpath + model + '_' + feature_or_pixel + '_' + distance_type + '_distance_F1_drop_class_err_threshold_' + str(threshold) + '.png', dpi=300)
     plt.close()
 
-    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     # plt.tight_layout()
     # if PCA == 'yes':
     #     plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_F1_drop_class_err_threshold_' + str(threshold) + '.png', dpi=300)
@@ -920,7 +920,7 @@ def plot_distance_F1_drop_class(testsets, distance_txt_paths, train_F1_txt_path,
     for quantile, y_pred in predictions.items():
         plt.plot(x.reshape(-1, 1), y_pred, label=f"Quantile: {quantile}", dashes=[6, 2])
     
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     # plt.title('r = %s' % round(correlation, 3))
     plt.tight_layout()
     if PCA == 'yes':
@@ -936,8 +936,8 @@ def plot_distance_F1_drop_class(testsets, distance_txt_paths, train_F1_txt_path,
     for i, (iclass, c) in enumerate(zip(classes, colors)):
         plt.errorbar(x=distance_mean[i], y=F1_drop_mean[i], xerr=distance_sem[i], yerr=F1_drop_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=iclass + ' (mean)', c=np.array([c]))
         plt.scatter(x=df[df['class'] == iclass].distance, y=df[df['class'] == iclass].F1_drop, label=iclass, alpha=0.6, c=np.array([c]))
-    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     plt.tight_layout()
     if PCA == 'yes':
         plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_F1_drop_class_scatter_err_threshold_' + str(threshold) + '.png', dpi=300)
@@ -960,8 +960,8 @@ def plot_distance_F1_drop_class(testsets, distance_txt_paths, train_F1_txt_path,
         reg = LinearRegression().fit(x.reshape(-1, 1), y)
         y_fit = reg.predict(x.reshape(-1, 1))
         plt.plot(x, y_fit, color=np.array([c]))
-    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     plt.tight_layout()
     if PCA == 'yes':
         plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_F1_drop_class_scatter_per_class_threshold_' + str(threshold) + '.png', dpi=300)
@@ -990,12 +990,17 @@ def plot_distance_F1_drop(testsets, distance_dfs, train_F1_txt_path, F1_txt_path
             df = df.drop(df[df['testset'] == itestset].index)
             df = df.reset_index(drop=True)
     
-    plt.figure(figsize=(12, 12))
+    plt.figure(figsize=(12, 9))
     plt.subplot(1, 1, 1)
     plt.xlabel('Distance to training set')
     plt.ylabel('F1 drop ratio')
     random.seed(100)
     colors = distinctipy.get_colors(len(df.columns.values[6:-1]), pastel_factor=0.7)
+    F1_drop_mean_global = []
+    F1_drop_sem_global = []
+    distance_mean_global = []
+    distance_sem_global = []
+    
     for ifeature, c in zip(df.columns.values[6:-1], colors):
         F1_drop_mean = []
         F1_drop_sem = []
@@ -1004,28 +1009,46 @@ def plot_distance_F1_drop(testsets, distance_dfs, train_F1_txt_path, F1_txt_path
         for i, itestset in enumerate(testsets):
             F1_drop_mean_testset = np.average(df[df['testset'] == itestset]['F1_drop'])
             F1_drop_mean.append(F1_drop_mean_testset)
+            F1_drop_mean_global.append(F1_drop_mean_testset)
             F1_drop_sem_testset = sem(df[df['testset'] == itestset]['F1_drop'])
             F1_drop_sem.append(F1_drop_sem_testset)
+            F1_drop_sem_global.append(F1_drop_sem_testset)
 
             distance_mean_testset = np.average(df[df['testset'] == itestset][ifeature])
             distance_mean.append(distance_mean_testset)
+            distance_mean_global.append(distance_mean_testset)
             distance_sem_testset = sem(df[df['testset'] == itestset][ifeature])
             distance_sem.append(distance_sem_testset)
+            distance_sem_global.append(distance_sem_testset)
         
         weights = 1 / np.sqrt(np.array(distance_sem)**2 + np.array(F1_drop_sem)**2)
         params, covariance = curve_fit(linear_func, distance_mean, F1_drop_mean, sigma=weights)
         a = params[0]
         b = params[1]
         F1_drop_mean_pred = a * np.array(distance_mean) + b
-        plt.errorbar(distance_mean, F1_drop_mean, xerr=distance_sem, yerr=F1_drop_sem, fmt='s', elinewidth=1, capthick=1, capsize=3, c=np.array([c]), alpha=0.3)
+        # plt.errorbar(distance_mean, F1_drop_mean, xerr=distance_sem, yerr=F1_drop_sem, fmt='s', elinewidth=1, capthick=1, capsize=3, c=np.array([c]), alpha=0.3)
+        
         # plt.errorbar(distance_mean, F1_drop_mean, fmt='s', elinewidth=1, capthick=1, capsize=3, c=np.array([c]), alpha=0.3)
 #         plt.plot(distance_mean, F1_drop_mean_pred, color=np.array([c]), label=ifeature)
         if a > 0.8:
-            plt.axline((distance_mean[0], F1_drop_mean_pred[0]), slope=a, color=np.array([c]), label=ifeature, linewidth=3)
-        else:
-            plt.axline((distance_mean[0], F1_drop_mean_pred[0]), slope=a, color=np.array([c]), label=ifeature, linewidth=0.8)
+            plt.axline((distance_mean[0], F1_drop_mean_pred[0]), slope=a, color=np.array([c]), label=ifeature, linewidth=3, linestyle='--')
+        # else:
+        #     plt.axline((distance_mean[0], F1_drop_mean_pred[0]), slope=a, color=np.array([c]), label=ifeature, linewidth=0.8)
+        
         # plt.axline((distance_mean[0], F1_drop_mean_pred[0]), (distance_mean[-1], F1_drop_mean_pred[-1]), color=np.array([c]), label=ifeature)
-    plt.legend(ncol=2)
+    
+    weights_global = 1 / np.sqrt(np.array(distance_sem_global)**2 + np.array(F1_drop_sem_global)**2)
+    params_global, covariance_global = curve_fit(linear_func, distance_mean_global, F1_drop_mean_global, sigma=weights_global)
+    a_global = params_global[0]
+    b_global = params_global[1]
+    F1_drop_mean_pred_global = a_global * np.array(distance_mean_global) + b_global
+    plt.axline((distance_mean_global[0], F1_drop_mean_pred_global[0]), slope=a_global, color='black', label='average', linewidth=3)
+
+    plt.ylim(-0.03, 0.3)
+    plt.xlim(0.05, 0.4)
+
+    plt.legend(bbox_to_anchor=(1, 1), fancybox=True, ncol=2)
+    plt.tight_layout()
     if PCA == 'yes':
         plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_F1_drop_per_feature_threshold_' + str(threshold) + '.png', dpi=300)
     elif PCA == 'no':
@@ -1270,7 +1293,7 @@ def plot_distance_F1_testset_x(testsets, distance_txt_paths, train_F1_txt_path, 
     colors = distinctipy.get_colors(len(testsets), pastel_factor=0.7)
     for x, y, c, l in zip(df.distance, df.F1_drop, colors, testsets):
         plt.scatter(x, y, c=np.array([c]), label=l)
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), fancybox=True, ncol=5)
     plt.tight_layout()
     Path(outpath).mkdir(parents=True, exist_ok=True)
     if PCA == 'yes':
@@ -1285,7 +1308,7 @@ def plot_distance_F1_testset_x(testsets, distance_txt_paths, train_F1_txt_path, 
     plt.ylabel('F1-score')
     for x, y, c, l in zip(df.distance, df.F1, colors, testsets):
         plt.scatter(x, y, c=np.array([c]), label=l)
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), fancybox=True, ncol=5)
     plt.tight_layout()
     Path(outpath).mkdir(parents=True, exist_ok=True)
     if PCA == 'yes':
@@ -1298,16 +1321,19 @@ def plot_distance_F1_testset_x(testsets, distance_txt_paths, train_F1_txt_path, 
 def plot_distance_F1_testset_y(testsets, distance_txt_paths, train_F1_txt_path, F1_txt_paths, outpath, model):    
     print('------------plotting global correlation of abundance distance and F1------------')
 
-    df = pd.DataFrame(columns=['distance', 'F1', 'F1_drop'], index=testsets)
+    df = pd.DataFrame(columns=['distance', 'F1', 'F1_drop', 'Acc', 'Acc_drop'], index=testsets)
     for i, itestset in enumerate(testsets):
         df_distance = pd.read_csv(distance_txt_paths[i], header=None)
         distance = float(df_distance.iloc[0, 0][18:])
         df_F1 = pd.read_csv(F1_txt_paths[i], header=None)
         F1 = float(df_F1.iloc[3, 0])
+        acc = float(df_F1.iloc[1, 0])
         df_F1_train = pd.read_csv(train_F1_txt_path, header=None)
         F1_train = float(df_F1_train.iloc[3, 0])
+        acc_train = float(df_F1_train.iloc[1, 0])
         F1_drop = 1 - np.divide(F1, F1_train)
-        df.loc[itestset] = [distance, F1, F1_drop]
+        acc_drop = 1 - np.divide(acc, acc_train)
+        df.loc[itestset] = [distance, F1, F1_drop, acc, acc_drop]
 
     plt.figure(figsize=(6, 6))
     plt.subplot(1, 1, 1)
@@ -1317,7 +1343,7 @@ def plot_distance_F1_testset_y(testsets, distance_txt_paths, train_F1_txt_path, 
     colors = distinctipy.get_colors(len(testsets), pastel_factor=0.7)
     for x, y, c, l in zip(df.distance, df.F1_drop, colors, testsets):
         plt.scatter(x, y, c=np.array([c]), label=l)
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), fancybox=True, ncol=5)
     plt.tight_layout()
     Path(outpath).mkdir(parents=True, exist_ok=True)
     plt.savefig(outpath + model + '_abundance_distance_F1_drop_testset_err.png', dpi=300)
@@ -1329,10 +1355,34 @@ def plot_distance_F1_testset_y(testsets, distance_txt_paths, train_F1_txt_path, 
     plt.ylabel('F1-score')
     for x, y, c, l in zip(df.distance, df.F1, colors, testsets):
         plt.scatter(x, y, c=np.array([c]), label=l)
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), fancybox=True, ncol=5)
     plt.tight_layout()
     Path(outpath).mkdir(parents=True, exist_ok=True)
     plt.savefig(outpath + model + '_abundance_distance_F1_testset_err.png', dpi=300)
+    plt.close()
+
+    plt.figure(figsize=(6, 6))
+    plt.subplot(1, 1, 1)
+    plt.xlabel('Distance to training set')
+    plt.ylabel('Accuracy')
+    for x, y, c, l in zip(df.distance, df.Acc, colors, testsets):
+        plt.scatter(x, y, c=np.array([c]), label=l)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), fancybox=True, ncol=5)
+    plt.tight_layout()
+    Path(outpath).mkdir(parents=True, exist_ok=True)
+    plt.savefig(outpath + model + '_abundance_distance_acc_testset_err.png', dpi=300)
+    plt.close()
+
+    plt.figure(figsize=(6, 6))
+    plt.subplot(1, 1, 1)
+    plt.xlabel('Distance to training set')
+    plt.ylabel('Accuracy drop ratio')
+    for x, y, c, l in zip(df.distance, df.Acc_drop, colors, testsets):
+        plt.scatter(x, y, c=np.array([c]), label=l)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), fancybox=True, ncol=5)
+    plt.tight_layout()
+    Path(outpath).mkdir(parents=True, exist_ok=True)
+    plt.savefig(outpath + model + '_abundance_distance_acc_drop_testset_err.png', dpi=300)
     plt.close()
 
 
@@ -1423,7 +1473,7 @@ def plot_distance(testsets, distance_txt_paths, outpath, feature_or_pixel, PCA, 
     for column in df_plot:
         plt.scatter(x=range(len(df_plot)), y=df_plot[column], label=column, s=10)
     plt.scatter(x=range(len(df_plot)), y=df_plot.mean(axis=1), label='average', s=50, c='red')
-    plt.legend(loc=8, bbox_to_anchor=(0.5, -0.3), fancybox=True, shadow=True, ncol=7)
+    plt.legend(loc=8, bbox_to_anchor=(0.5, -0.3), fancybox=True, ncol=7)
     plt.tight_layout()
     Path(outpath).mkdir(parents=True, exist_ok=True)
     if PCA == 'yes':

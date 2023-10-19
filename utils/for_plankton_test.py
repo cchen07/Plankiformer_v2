@@ -177,6 +177,42 @@ class CreateDataset_with_y(Dataset):
             X = self.transform_TTA_2(image)
         elif TTA_type == 3:
             X = self.transform_TTA_3(image)
+        elif TTA_type == 4:
+            X = self.transform_TTA_4(image)
+        elif TTA_type == 5:
+            X = self.transform_TTA_5(image)
+        elif TTA_type == 6:
+            X = self.transform_TTA_6(image)
+        elif TTA_type == 7:
+            X = self.transform_TTA_7(image)
+        elif TTA_type == 8:
+            X = self.transform_TTA_8(image)
+        elif TTA_type == 9:
+            X = self.transform_TTA_9(image)
+        elif TTA_type == 10:
+            X = self.transform_TTA_10(image)
+        elif TTA_type == 11:
+            X = self.transform_TTA_11(image)
+        elif TTA_type == 12:
+            X = self.transform_TTA_12(image)
+        elif TTA_type == 13:
+            X = self.transform_TTA_13(image)
+        elif TTA_type == 14:
+            X = self.transform_TTA_14(image)
+        elif TTA_type == 15:
+            X = self.transform_TTA_15(image)
+        elif TTA_type == 16:
+            X = self.transform_TTA_16(image)
+        elif TTA_type == 17:
+            X = self.transform_TTA_17(image)
+        elif TTA_type == 18:
+            X = self.transform_TTA_18(image)
+        elif TTA_type == 19:
+            X = self.transform_TTA_19(image)
+        elif TTA_type == 20:
+            X = self.transform_TTA_20(image)
+        elif TTA_type == 21:
+            X = self.transform_TTA_21(image)
         y = label
         sample = [X, y]
         return sample
@@ -188,24 +224,174 @@ class CreateDataset_with_y(Dataset):
     transform_y = T.Compose([T.ToTensor()])
 
     ## Test-time augmentations
+    # Rotate 90
     transform_TTA_1 = T.Compose([
         T.ToPILImage(),
         T.Resize(224),
-        T.RandomHorizontalFlip(p=1),
+        T.RandomRotation(degrees=(90, 90)),
         T.ToTensor()])
     transform_TTA_1_y = T.Compose([T.ToTensor()])
 
+    # Rotate 180
     transform_TTA_2 = T.Compose([
+        T.ToPILImage(),
+        T.Resize(224),
+        T.RandomRotation(degrees=(180, 180)),
+        T.ToTensor()])
+    transform_TTA_2_y = T.Compose([T.ToTensor()])
+
+    # Rotate 270
+    transform_TTA_3 = T.Compose([
+        T.ToPILImage(),
+        T.Resize(224),
+        T.RandomRotation(degrees=(270, 270)),
+        T.ToTensor()])
+    transform_TTA_3_y = T.Compose([T.ToTensor()])
+
+    # Horizontal flip
+    transform_TTA_4 = T.Compose([
+        T.ToPILImage(),
+        T.Resize(224),
+        T.RandomHorizontalFlip(p=1),
+        T.ToTensor()])
+    transform_TTA_4_y = T.Compose([T.ToTensor()])
+
+    # Random rotation
+    transform_TTA_5 = T.Compose([
         T.ToPILImage(),
         T.Resize(224),
         T.RandomRotation(degrees=(0, 360)),
         T.ToTensor()])
-    transform_TTA_2_y = T.Compose([T.ToTensor()])
+    transform_TTA_5_y = T.Compose([T.ToTensor()])
 
-    transform_TTA_3 = T.Compose([
+    # Flip + rotation
+    transform_TTA_6 = T.Compose([
         T.ToPILImage(),
         T.Resize(224),
         T.RandomHorizontalFlip(p=1),
         T.RandomRotation(degrees=(0, 360)),
         T.ToTensor()])
-    transform_TTA_3_y = T.Compose([T.ToTensor()])
+    transform_TTA_6_y = T.Compose([T.ToTensor()])
+
+    # Flip + rotate 90
+    transform_TTA_7 = T.Compose([
+        T.ToPILImage(),
+        T.Resize(224),
+        T.RandomHorizontalFlip(p=1),
+        T.RandomRotation(degrees=(90, 90)),
+        T.ToTensor()])
+    transform_TTA_7_y = T.Compose([T.ToTensor()])
+
+    # Flip + rotate 180
+    transform_TTA_8 = T.Compose([
+        T.ToPILImage(),
+        T.Resize(224),
+        T.RandomHorizontalFlip(p=1),
+        T.RandomRotation(degrees=(180, 180)),
+        T.ToTensor()])
+    transform_TTA_8_y = T.Compose([T.ToTensor()])
+
+    # Flip + rotate 270
+    transform_TTA_9 = T.Compose([
+        T.ToPILImage(),
+        T.Resize(224),
+        T.RandomHorizontalFlip(p=1),
+        T.RandomRotation(degrees=(270, 270)),
+        T.ToTensor()])
+    transform_TTA_9_y = T.Compose([T.ToTensor()])
+
+    # Rotate 45
+    transform_TTA_10 = T.Compose([
+        T.ToPILImage(),
+        T.Resize(224),
+        T.RandomRotation(degrees=(45, 45)),
+        T.ToTensor()])
+    transform_TTA_10_y = T.Compose([T.ToTensor()])
+
+    # Rotate 135
+    transform_TTA_11 = T.Compose([
+        T.ToPILImage(),
+        T.Resize(224),
+        T.RandomRotation(degrees=(135, 135)),
+        T.ToTensor()])
+    transform_TTA_11_y = T.Compose([T.ToTensor()])
+
+    # Rotate 225
+    transform_TTA_12 = T.Compose([
+        T.ToPILImage(),
+        T.Resize(224),
+        T.RandomRotation(degrees=(225, 225)),
+        T.ToTensor()])
+    transform_TTA_12_y = T.Compose([T.ToTensor()])
+
+    # Rotate 315
+    transform_TTA_13 = T.Compose([
+        T.ToPILImage(),
+        T.Resize(224),
+        T.RandomRotation(degrees=(315, 315)),
+        T.ToTensor()])
+    transform_TTA_13_y = T.Compose([T.ToTensor()])
+
+    # Rotate 30
+    transform_TTA_14 = T.Compose([
+        T.ToPILImage(),
+        T.Resize(224),
+        T.RandomRotation(degrees=(30, 30)),
+        T.ToTensor()])
+    transform_TTA_14_y = T.Compose([T.ToTensor()])
+
+    # Rotate 60
+    transform_TTA_15 = T.Compose([
+        T.ToPILImage(),
+        T.Resize(224),
+        T.RandomRotation(degrees=(60, 60)),
+        T.ToTensor()])
+    transform_TTA_15_y = T.Compose([T.ToTensor()])
+
+    # Rotate 120
+    transform_TTA_16 = T.Compose([
+        T.ToPILImage(),
+        T.Resize(224),
+        T.RandomRotation(degrees=(120, 120)),
+        T.ToTensor()])
+    transform_TTA_16_y = T.Compose([T.ToTensor()])
+
+    # Rotate 150
+    transform_TTA_17 = T.Compose([
+        T.ToPILImage(),
+        T.Resize(224),
+        T.RandomRotation(degrees=(150, 150)),
+        T.ToTensor()])
+    transform_TTA_17_y = T.Compose([T.ToTensor()])
+
+    # Rotate 210
+    transform_TTA_18 = T.Compose([
+        T.ToPILImage(),
+        T.Resize(224),
+        T.RandomRotation(degrees=(210, 210)),
+        T.ToTensor()])
+    transform_TTA_18_y = T.Compose([T.ToTensor()])
+
+    # Rotate 240
+    transform_TTA_19 = T.Compose([
+        T.ToPILImage(),
+        T.Resize(224),
+        T.RandomRotation(degrees=(240, 240)),
+        T.ToTensor()])
+    transform_TTA_19_y = T.Compose([T.ToTensor()])
+
+    # Rotate 300
+    transform_TTA_20 = T.Compose([
+        T.ToPILImage(),
+        T.Resize(224),
+        T.RandomRotation(degrees=(300, 300)),
+        T.ToTensor()])
+    transform_TTA_20_y = T.Compose([T.ToTensor()])
+
+    # Rotate 330
+    transform_TTA_21 = T.Compose([
+        T.ToPILImage(),
+        T.Resize(224),
+        T.RandomRotation(degrees=(330, 330)),
+        T.ToTensor()])
+    transform_TTA_21_y = T.Compose([T.ToTensor()])

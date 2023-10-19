@@ -59,7 +59,7 @@ def plot_distance_bias_scatter(testsets, distance_txt_paths, bias_xlsx_paths, ou
     colors = distinctipy.get_colors(len(np.unique(df['class'])), pastel_factor=0.7)
     for iclass, c in zip(np.unique(df['class']), colors):
         plt.scatter(df[df['class'] == iclass].distance, df[df['class'] == iclass].APE, label=iclass, c=np.array([c]))
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     # plt.xlim(0, 1)
     # plt.ylim(0, 1)
 
@@ -96,7 +96,7 @@ def plot_distance(testsets, distance_txt_paths, outpath, feature_or_pixel, PCA, 
     for column in df_plot:
         plt.scatter(x=range(len(df_plot)), y=df_plot[column], label=column, s=10)
     plt.scatter(x=range(len(df_plot)), y=df_plot.mean(axis=1), label='average', s=50, c='red')
-    plt.legend(loc=8, bbox_to_anchor=(0.5, -0.3), fancybox=True, shadow=True, ncol=7)
+    plt.legend(loc=8, bbox_to_anchor=(0.5, -0.3), fancybox=True, ncol=7)
     plt.tight_layout()
     Path(outpath).mkdir(parents=True, exist_ok=True)
     if PCA == 'yes':
@@ -230,7 +230,7 @@ def plot_distance_bias_testset(testsets, distance_txt_paths, bias_xlsx_paths, ou
     reg = LinearRegression().fit(np.array(distance_mean).reshape(-1, 1), np.array(bias_mean))
     y_fit = reg.predict(np.array(distance_mean).reshape(-1, 1))
     plt.plot(np.array(distance_mean), y_fit, color='red', label='regression line')
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     plt.tight_layout()  
     Path(outpath).mkdir(parents=True, exist_ok=True)
     if PCA == 'yes':
@@ -271,7 +271,7 @@ def plot_distance_bias_testset(testsets, distance_txt_paths, bias_xlsx_paths, ou
     for quantile, y_pred in predictions.items():
         plt.plot(x.reshape(-1, 1), y_pred, label=f"Quantile: {quantile}", dashes=[6, 2])
 
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     # plt.title('r = %s' % round(correlation, 3))
     plt.tight_layout()
     if PCA == 'yes':
@@ -287,7 +287,7 @@ def plot_distance_bias_testset(testsets, distance_txt_paths, bias_xlsx_paths, ou
     for i, (itestset, c) in enumerate(zip(testsets, colors)):
         plt.errorbar(x=distance_mean[i], y=bias_mean[i], xerr=distance_sem[i], yerr=bias_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=itestset + ' (mean)', c=np.array([c]))
         plt.scatter(x=df[df['testset'] == itestset].distance, y=df[df['testset'] == itestset].APE, label=itestset, alpha=0.6, c=np.array([c]))
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     plt.tight_layout()
     if PCA == 'yes':
         plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_bias_testset_scatter_err_threshold_' + str(threshold) + '.png', dpi=300)
@@ -355,7 +355,7 @@ def plot_distance_bias_class(testsets, distance_txt_paths, bias_xlsx_paths, outp
     reg = LinearRegression().fit(np.array(distance_mean).reshape(-1, 1), np.array(bias_mean))
     y_fit = reg.predict(np.array(distance_mean).reshape(-1, 1))
     plt.plot(np.array(distance_mean), y_fit, color='red', label='regression line')
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     plt.tight_layout()
     Path(outpath).mkdir(parents=True, exist_ok=True)
     if PCA == 'yes':
@@ -400,7 +400,7 @@ def plot_distance_bias_class(testsets, distance_txt_paths, bias_xlsx_paths, outp
     for quantile, y_pred in predictions.items():
         plt.plot(x.reshape(-1, 1), y_pred, label=f"Quantile: {quantile}", dashes=[6, 2])
 
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     # plt.title('r = %s' % round(correlation, 3))
     plt.tight_layout()
     if PCA == 'yes':
@@ -417,7 +417,7 @@ def plot_distance_bias_class(testsets, distance_txt_paths, bias_xlsx_paths, outp
     for i, (iclass, c) in enumerate(zip(classes, colors)):
         plt.errorbar(x=distance_mean[i], y=bias_mean[i], xerr=distance_sem[i], yerr=bias_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=iclass + ' (mean)', c=np.array([c]))
         plt.scatter(x=df[df['class'] == iclass].distance, y=df[df['class'] == iclass].APE, label=iclass, alpha=0.6, c=np.array([c]))
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     plt.tight_layout()
     if PCA == 'yes':
         plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_bias_class_scatter_err_threshold_' + str(threshold) + '.png', dpi=300)
@@ -440,8 +440,8 @@ def plot_distance_bias_class(testsets, distance_txt_paths, bias_xlsx_paths, outp
         reg = LinearRegression().fit(x.reshape(-1, 1), y)
         y_fit = reg.predict(x.reshape(-1, 1))
         plt.plot(x, y_fit, color=np.array([c]))
-    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     plt.tight_layout()
     if PCA == 'yes':
         plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_bias_class_scatter_per_class_threshold_' + str(threshold) + '.png', dpi=300)
@@ -523,7 +523,7 @@ def plot_distance_bias_rise_testset(testsets, distance_txt_paths, train_bias_xls
     y_fit = reg.predict(np.array(distance_mean).reshape(-1, 1))
     plt.plot(np.array(distance_mean), y_fit, color='red', label='regression line')
     # plt.title('r = %s' % round(correlation, 3))
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     plt.tight_layout()
     if PCA == 'yes':
         plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_bias_rise_testset_err_threshold_' + str(threshold) + '.png', dpi=300)
@@ -564,7 +564,7 @@ def plot_distance_bias_rise_testset(testsets, distance_txt_paths, train_bias_xls
     for quantile, y_pred in predictions.items():
         plt.plot(x.reshape(-1, 1), y_pred, label=f"Quantile: {quantile}", dashes=[6, 2])
 
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     # plt.title('r = %s' % round(correlation, 3))
     plt.tight_layout()
     if PCA == 'yes':
@@ -583,7 +583,7 @@ def plot_distance_bias_rise_testset(testsets, distance_txt_paths, train_bias_xls
     for i, (itestset, c) in enumerate(zip(testsets, colors)):
         plt.errorbar(x=distance_mean[i], y=bias_rise_mean[i], xerr=distance_sem[i], yerr=bias_rise_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=itestset + ' (mean)', c=np.array([c]))
         plt.scatter(x=df[df['testset'] == itestset].distance, y=df[df['testset'] == itestset].APE_rise, label=itestset, alpha=0.6, c=np.array([c]))
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     plt.tight_layout()
     if PCA == 'yes':
         plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_bias_rise_testset_scatter_err_threshold_' + str(threshold) + '.png', dpi=300)
@@ -667,7 +667,7 @@ def plot_distance_bias_rise_class(testsets, distance_txt_paths, train_bias_xlsx_
     reg = LinearRegression().fit(np.array(distance_mean).reshape(-1, 1), np.array(bias_rise_mean))
     y_fit = reg.predict(np.array(distance_mean).reshape(-1, 1))
     plt.plot(np.array(distance_mean), y_fit, color='red', label='regression line')
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     plt.tight_layout()
     Path(outpath).mkdir(parents=True, exist_ok=True)
     if PCA == 'yes':
@@ -708,7 +708,7 @@ def plot_distance_bias_rise_class(testsets, distance_txt_paths, train_bias_xlsx_
     for quantile, y_pred in predictions.items():
         plt.plot(x.reshape(-1, 1), y_pred, label=f"Quantile: {quantile}", dashes=[6, 2])
     
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     plt.tight_layout()
     if PCA == 'yes':
         plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_bias_rise_class_scatter_threshold_' + str(threshold) + '.png', dpi=300)
@@ -723,7 +723,7 @@ def plot_distance_bias_rise_class(testsets, distance_txt_paths, train_bias_xlsx_
     for i, (iclass, c) in enumerate(zip(classes, colors)):
         plt.errorbar(x=distance_mean[i], y=bias_rise_mean[i], xerr=distance_sem[i], yerr=bias_rise_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=iclass + ' (mean)', c=np.array([c]))
         plt.scatter(x=df[df['class'] == iclass].distance, y=df[df['class'] == iclass].APE_rise, label=iclass, alpha=0.6, c=np.array([c]))
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     plt.tight_layout()
     if PCA == 'yes':
         plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_bias_rise_class_scatter_err_threshold_' + str(threshold) + '.png', dpi=300)
@@ -746,8 +746,8 @@ def plot_distance_bias_rise_class(testsets, distance_txt_paths, train_bias_xlsx_
         reg = LinearRegression().fit(x.reshape(-1, 1), y)
         y_fit = reg.predict(x.reshape(-1, 1))
         plt.plot(x, y_fit, color=np.array([c]))
-    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
     plt.tight_layout()
     if PCA == 'yes':
         plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_bias_rise_class_scatter_per_class_threshold_' + str(threshold) + '.png', dpi=300)

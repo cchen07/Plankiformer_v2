@@ -71,15 +71,19 @@ def baseline_performance(datasets, F1_txt_paths, outpath):
     plt.close()
 
     ## F1-score per class
-    plt.figure(figsize=(9, 10))
+    plt.figure(figsize=(5, 5))
     plt.xlabel('Dataset')
     plt.ylabel('F1-score')
     plt.xticks(range(len(datasets)), labels=datasets, rotation=45, rotation_mode='anchor', ha='right')
     random.seed(100)
     colors = distinctipy.get_colors(len(classes), pastel_factor=0.7)
     for iclass, c in zip(classes, colors):
-        plt.plot(range(len(datasets)), df_F1.loc[iclass, :], label=iclass, color=c)
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), fancybox=True, shadow=True, ncol=5)
+        if iclass == 'nauplius' or iclass == 'eudiaptomus' or iclass == 'unknown':
+            plt.plot(range(len(datasets)), df_F1.loc[iclass, :], linewidth=3, label=iclass, color=c, ls='', marker='o')
+        # else:
+        #     plt.plot(range(len(datasets)), df_F1.loc[iclass, :], label=iclass, color=c, alpha=0.3, ls='', marker='.')
+    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), fancybox=True, ncol=5)
+    plt.legend()
     plt.tight_layout()
     Path(outpath).mkdir(parents=True, exist_ok=True)
     plt.savefig(outpath + 'baseline_performance_per_class.png', dpi=300)
@@ -169,9 +173,9 @@ def population_scatter(testsets, test_bias_xlsx_paths, outpath):
 
     df_true = pd.DataFrame(index=classes, columns=testsets)
     df_pred = pd.DataFrame(index=classes, columns=testsets)
-    df_pred_AC = pd.DataFrame(index=classes, columns=testsets)
-    df_pred_PCC = pd.DataFrame(index=classes, columns=testsets)
-    df_pred_PAC = pd.DataFrame(index=classes, columns=testsets)
+    # df_pred_AC = pd.DataFrame(index=classes, columns=testsets)
+    # df_pred_PCC = pd.DataFrame(index=classes, columns=testsets)
+    # df_pred_PAC = pd.DataFrame(index=classes, columns=testsets)
 
     for i, itestset in enumerate(testsets):
         df_bias = preprocess_bias_xlsx(test_bias_xlsx_paths[i])
@@ -179,30 +183,37 @@ def population_scatter(testsets, test_bias_xlsx_paths, outpath):
         for iclass in df_bias.index:
             df_true.loc[iclass, itestset] = df_bias.loc[iclass, 'Ground_truth']
             df_pred.loc[iclass, itestset] = df_bias.loc[iclass, 'Predict']
-            df_pred_AC.loc[iclass, itestset] = df_bias.loc[iclass, 'AC']
-            df_pred_PCC.loc[iclass, itestset] = df_bias.loc[iclass, 'PCC']
-            df_pred_PAC.loc[iclass, itestset] = df_bias.loc[iclass, 'PAC']
+            # df_pred_AC.loc[iclass, itestset] = df_bias.loc[iclass, 'AC']
+            # df_pred_PCC.loc[iclass, itestset] = df_bias.loc[iclass, 'PCC']
+            # df_pred_PAC.loc[iclass, itestset] = df_bias.loc[iclass, 'PAC']
 
-    fig, ax = plt.subplots(figsize=(10, 10))
+    fig, ax = plt.subplots(figsize=(8, 8))
     # plt.figure(figsize=(9, 10))
-    ax.set_xlabel('N_true')
-    ax.set_ylabel('N_pred')
+    ax.set_xlabel(r'$N\_\mathrm{true}$', fontsize=15)
+    ax.set_ylabel(r'$N\_\mathrm{pred}$', fontsize=15)
     random.seed(100)
-    colors = distinctipy.get_colors(len(classes), pastel_factor=0.7)
-    ax2 = fig.add_axes([.2, .6, .25, .25])
+    # colors = distinctipy.get_colors(len(classes), pastel_factor=0.7)
+    colors = distinctipy.get_colors(len(testsets), pastel_factor=0.7)
+
+    ax2 = fig.add_axes([.2, .65, .3, .3])
     ax.set_xscale('log')
     ax.set_yscale('log')
-    ax2.set_xlabel('N_true')
-    ax2.set_ylabel('N_pred')
+    # ax.set_xlim(0, 1000)
+    # ax.set_ylim(0, 1000)
+    ax2.set_xlabel(r'$N\_\mathrm{true}$')
+    ax2.set_ylabel(r'$N\_\mathrm{pred}$')
+    ax2.axline((0, 0), slope=1, c='red', ls='--', lw=1)
+    ax.axline((0, 0), (1000, 1000), c='red', ls='--', lw=1)
 
-    ax.scatter(df_true, df_pred, label='CC', color='deepskyblue')
-    ax.scatter(df_true, df_pred_AC, label='AC', color='orange')
-    ax.scatter(df_true, df_pred_PCC, label='PCC', color='darkviolet')
-    ax.scatter(df_true, df_pred_PAC, label='PAC', color='olive')
-    ax2.scatter(df_true, df_pred, label='CC', color='deepskyblue')
-    ax2.scatter(df_true, df_pred_AC, label='AC', color='orange')
-    ax2.scatter(df_true, df_pred_PCC, label='PCC', color='darkviolet')
-    ax2.scatter(df_true, df_pred_PAC, label='PAC', color='olive')
+    for itestset, c in zip(testsets, colors):
+        ax.scatter(df_true[itestset], df_pred[itestset], label=itestset, color=c)
+        # ax.scatter(df_true, df_pred_AC, label='AC', color='orange')
+        # ax.scatter(df_true, df_pred_PCC, label='PCC', color='darkviolet')
+        # ax.scatter(df_true, df_pred_PAC, label='PAC', color='olive')
+        ax2.scatter(df_true[itestset], df_pred[itestset], label=itestset, color=c, s=7)
+        # ax2.scatter(df_true, df_pred_AC, label='AC', color='orange')
+        # ax2.scatter(df_true, df_pred_PCC, label='PCC', color='darkviolet')
+        # ax2.scatter(df_true, df_pred_PAC, label='PAC', color='olive')
 
     # for iclass, c in zip(classes, colors):
     #     ax.scatter(df_true.loc[iclass], df_pred.loc[iclass], label=iclass, color=c)
@@ -210,16 +221,15 @@ def population_scatter(testsets, test_bias_xlsx_paths, outpath):
     #     ax2.scatter(df_true.loc[iclass], df_pred.loc[iclass], label=iclass, color=c)
     #     ax2.scatter(df_true.loc[iclass], df_pred_AC.loc[iclass], label=iclass, color=c, marker='+')
 
-    ax2.axline((0, 0), slope=1, c='red')
-    ax.axline((0, 0), (1000, 1000), c='red')
-    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), fancybox=True, shadow=True, ncol=10)
-    ax2.set_xlim([-50, 1000])
-    ax2.set_ylim([-50, 1000])
-    ax.set_xlim([1, 1000])
-    ax.set_ylim([1, 1000])
+    ax.legend(loc=4)
+    # ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), fancybox=True, ncol=10)
+    ax2.set_xlim([-50, 2000])
+    ax2.set_ylim([-50, 2000])
+    ax.set_xlim([1, 2000])
+    ax.set_ylim([1, 2000])
     # plt.axis('square')
     # ax.set_aspect('equal', 'datalim')
-    # plt.tight_layout()
+    plt.tight_layout()
     Path(outpath).mkdir(parents=True, exist_ok=True)
     plt.savefig(outpath + 'population_scatter.png', dpi=300)
     plt.close()

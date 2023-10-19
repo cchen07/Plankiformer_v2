@@ -85,7 +85,7 @@ def PlotAbundance_overall(datapaths, outpath, datapath_labels):
     # plt.ylabel('Datasets')
 
     df.plot(figsize=(15, 10), kind='barh', stacked=True, legend=False, colormap='nipy_spectral', xlabel='Abundance density', ylabel='Datasets')
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), fancybox=True, shadow=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), fancybox=True, ncol=5)
 
     plt.tight_layout()
     Path(outpath).mkdir(parents=True, exist_ok=True)
