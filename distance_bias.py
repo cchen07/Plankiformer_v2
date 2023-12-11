@@ -221,7 +221,7 @@ def plot_distance_bias_testset(testsets, distance_txt_paths, bias_xlsx_paths, ou
 
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('Absolute Percentage Error')
     random.seed(100)
     colors = distinctipy.get_colors(len(testsets), pastel_factor=0.7)
@@ -241,7 +241,7 @@ def plot_distance_bias_testset(testsets, distance_txt_paths, bias_xlsx_paths, ou
 
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('Absolute Percentage Error')
     x = np.array([])
     y = np.array([])
@@ -282,7 +282,7 @@ def plot_distance_bias_testset(testsets, distance_txt_paths, bias_xlsx_paths, ou
 
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('Absolute Percentage Error')
     for i, (itestset, c) in enumerate(zip(testsets, colors)):
         plt.errorbar(x=distance_mean[i], y=bias_mean[i], xerr=distance_sem[i], yerr=bias_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=itestset + ' (mean)', c=np.array([c]))
@@ -346,7 +346,7 @@ def plot_distance_bias_class(testsets, distance_txt_paths, bias_xlsx_paths, outp
 
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('Absolute Percentage Error')
     random.seed(100)
     colors = distinctipy.get_colors(len(classes), pastel_factor=0.7)
@@ -366,7 +366,7 @@ def plot_distance_bias_class(testsets, distance_txt_paths, bias_xlsx_paths, outp
 
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('Absolute Percentage Error')
     x = np.array([])
     y = np.array([])
@@ -411,7 +411,7 @@ def plot_distance_bias_class(testsets, distance_txt_paths, bias_xlsx_paths, outp
 
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('Absolute Percentage Error')
     
     for i, (iclass, c) in enumerate(zip(classes, colors)):
@@ -427,7 +427,7 @@ def plot_distance_bias_class(testsets, distance_txt_paths, bias_xlsx_paths, outp
 
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('Absolute Percentage Error')
     for i, (iclass, c) in enumerate(zip(classes, colors)):
         plt.scatter(x=df[df['class'] == iclass].distance, y=df[df['class'] == iclass].APE, label=iclass, alpha=0.6, c=np.array([c]))
@@ -511,7 +511,7 @@ def plot_distance_bias_rise_testset(testsets, distance_txt_paths, train_bias_xls
 
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('APE rise ratio')
     random.seed(100)
     colors = distinctipy.get_colors(len(testsets), pastel_factor=0.7)
@@ -533,7 +533,7 @@ def plot_distance_bias_rise_testset(testsets, distance_txt_paths, train_bias_xls
 
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('APE rise ratio')
     x = np.array([])
     y = np.array([])
@@ -575,7 +575,7 @@ def plot_distance_bias_rise_testset(testsets, distance_txt_paths, train_bias_xls
 
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('APE rise ratio')
     # for i, itestset in enumerate(testsets):
     #     plt.errorbar(x=distance_mean[i], y=bias_rise_mean[i], xerr=distance_sem[i], yerr=bias_rise_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=itestset)
@@ -656,7 +656,7 @@ def plot_distance_bias_rise_class(testsets, distance_txt_paths, train_bias_xlsx_
 
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('APE rise ratio')
     random.seed(100)
     colors = distinctipy.get_colors(len(classes), pastel_factor=0.7)
@@ -678,7 +678,7 @@ def plot_distance_bias_rise_class(testsets, distance_txt_paths, train_bias_xlsx_
 
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('APE rise ratio')
     x = np.array([])
     y = np.array([])
@@ -718,7 +718,7 @@ def plot_distance_bias_rise_class(testsets, distance_txt_paths, train_bias_xlsx_
 
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('APE rise ratio')
     for i, (iclass, c) in enumerate(zip(classes, colors)):
         plt.errorbar(x=distance_mean[i], y=bias_rise_mean[i], xerr=distance_sem[i], yerr=bias_rise_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=iclass + ' (mean)', c=np.array([c]))
@@ -733,7 +733,7 @@ def plot_distance_bias_rise_class(testsets, distance_txt_paths, train_bias_xlsx_
 
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('APE rise ratio')
     for i, (iclass, c) in enumerate(zip(classes, colors)):
         plt.scatter(x=df[df['class'] == iclass].distance, y=df[df['class'] == iclass].APE_rise, label=iclass, alpha=0.6, c=np.array([c]))
@@ -806,7 +806,7 @@ def plot_distance_bias_rise(testsets, distance_dfs, train_bias_xlsx_path, bias_x
     
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('APE rise ratio')
     random.seed(100)
     colors = distinctipy.get_colors(len(df.columns.values[6:-1]), pastel_factor=0.7)
@@ -897,7 +897,7 @@ def plot_distance_bias(testsets, distance_dfs, train_bias_xlsx_path, bias_xlsx_p
 
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('Absolute Percentage Error')
     random.seed(100)
     colors = distinctipy.get_colors(len(df.columns.values[6:-1]), pastel_factor=0.7)
@@ -989,7 +989,7 @@ def plot_distance_bias_rise_per_class_per_component(testsets, distance_dfs, trai
             continue
         plt.figure(figsize=(10, 10))
         plt.subplot(1, 1, 1)
-        plt.xlabel('Distance to training set')
+        plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
         plt.ylabel('APE rise ratio')
 
         for ifeature,c in zip(df.columns.values[6:-1], colors):
@@ -1092,7 +1092,7 @@ def plot_distance_bias_per_class_per_component(testsets, distance_dfs, train_bia
             continue
         plt.figure(figsize=(10, 10))
         plt.subplot(1, 1, 1)
-        plt.xlabel('Distance to training set')
+        plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
         plt.ylabel('Absolute Percentage Error')
         
         for ifeature,c in zip(df.columns.values[6:-1], colors):

@@ -199,7 +199,7 @@ def plot_performance_curve(model_name, test_dataset, accuracy, f1_score, BC, NMA
 def plot_performance_baseline(aug_types, test_dataset, n_OOD_cells, accuracy, f1_score, BC, NMAE, outpath, remove_0):
     n_aug = len(aug_types)
     n_model_aug = len(accuracy)/n_aug
-    plt.figure(figsize=(15, 9))
+    plt.figure(figsize=(13, 9))
     plt.subplot(1, 4, 1)
     plt.xticks(np.arange(len(test_dataset)), labels=test_dataset, rotation=45, rotation_mode='anchor', ha='right')
     # plt.ylim(0.3, 1)
@@ -250,8 +250,9 @@ def plot_performance_baseline(aug_types, test_dataset, n_OOD_cells, accuracy, f1
         plt.errorbar(x=np.arange(len(test_dataset)-n_OOD_cells, len(test_dataset)), y=mean_NMAE[len(test_dataset)-n_OOD_cells:], yerr=sem_NMAE[len(test_dataset)-n_OOD_cells:], marker='s', markerfacecolor='none', capsize=3, ms=5, linestyle='', c='orange', label='OOD cells')
     # plt.legend()
 
-    plt.legend(loc='upper center', bbox_to_anchor=(-1.3, 1.12), fancybox=True, ncol=8)
-    plt.tight_layout()
+    plt.legend(loc='upper center', bbox_to_anchor=(-1.3, 1.12), fancybox=True, ncol=3)
+    plt.subplots_adjust(left=0.05, right=0.95, wspace=0.3)
+    # plt.tight_layout()
     Path(outpath).mkdir(parents=True, exist_ok=True)
     if remove_0 == 'no':
         plt.savefig(outpath + 'test_performance.png', dpi=300)

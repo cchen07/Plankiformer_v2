@@ -78,12 +78,14 @@ def baseline_performance(datasets, F1_txt_paths, outpath):
     random.seed(100)
     colors = distinctipy.get_colors(len(classes), pastel_factor=0.7)
     for iclass, c in zip(classes, colors):
-        if iclass == 'nauplius' or iclass == 'eudiaptomus' or iclass == 'unknown':
-            plt.plot(range(len(datasets)), df_F1.loc[iclass, :], linewidth=3, label=iclass, color=c, ls='', marker='o')
-        # else:
-        #     plt.plot(range(len(datasets)), df_F1.loc[iclass, :], label=iclass, color=c, alpha=0.3, ls='', marker='.')
-    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), fancybox=True, ncol=5)
-    plt.legend()
+        # if iclass == 'nauplius' or iclass == 'eudiaptomus' or iclass == 'unknown':
+        #     plt.plot(range(len(datasets)), df_F1.loc[iclass, :], linewidth=3, label=iclass, color=c, ls='', marker='o')
+        # # else:
+        # #     plt.plot(range(len(datasets)), df_F1.loc[iclass, :], label=iclass, color=c, alpha=0.3, ls='', marker='.')
+    
+        plt.plot(range(len(datasets)), df_F1.loc[iclass, :], linewidth=3, label=iclass, color=c, ls='', marker='o')
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), fancybox=True, ncol=5)
+    # plt.legend()
     plt.tight_layout()
     Path(outpath).mkdir(parents=True, exist_ok=True)
     plt.savefig(outpath + 'baseline_performance_per_class.png', dpi=300)
@@ -246,7 +248,7 @@ parser.add_argument('-outpath', help='path for saving the figure')
 args = parser.parse_args()
 
 if __name__ == '__main__':
-    # baseline_performance(args.datasets, args.F1_txt_paths, args.outpath)
+    baseline_performance(args.datasets, args.F1_txt_paths, args.outpath)
     # prediction_confidence(args.datasets, args.confidence_csv_paths, args.outpath)
     # abundance_distance_performance(args.testsets, args.train_F1_txt_path, args.test_F1_txt_paths, args.outpath)
-    population_scatter(args.testsets, args.test_bias_xlsx_paths, args.outpath)
+    # population_scatter(args.testsets, args.test_bias_xlsx_paths, args.outpath)

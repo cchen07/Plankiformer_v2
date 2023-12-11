@@ -80,11 +80,18 @@ def dataframe_distance_f1_drop(testsets, distance_txt_paths, train_F1_txt_path, 
         df_distance_F1['F1'] = df_F1['F1']
         dict_test = {key:F1 for key, F1 in zip(df_F1['class'], df_F1['F1'])}
         dict_train = {key:F1 for key, F1 in zip(df_F1_train['class'], df_F1_train['F1'])}
+        dict_test_recall = {key:recall for key, recall in zip(df_F1['class'], df_F1['recall'])}
+        dict_train_recall = {key:recall for key, recall in zip(df_F1_train['class'], df_F1_train['recall'])}
         F1_drop = []
         for i in dict_test.keys():
             F1_drop_class = 1 - np.divide(dict_test[i], dict_train[i])
             F1_drop.append(F1_drop_class)
         df_distance_F1['F1_drop'] = F1_drop
+        recall_drop = []
+        for i in dict_test_recall.keys():
+            recall_drop_class = 1 - np.divide(dict_test_recall[i], dict_train_recall[i])
+            recall_drop.append(recall_drop_class)
+        df_distance_F1['recall_drop'] = recall_drop
         
         df_distance_F1['distance'] = df_distance['distance']
         df = pd.concat([df, df_distance_F1])
@@ -154,27 +161,27 @@ def plot_distance_F1_scatter(testsets, distance_txt_paths, F1_txt_paths, outpath
         plt.savefig(outpath + model + '_' + feature_or_pixel + '_' + distance_type + '_distance_F1_scatter_threshold_' + str(threshold) + '.png', dpi=300)
     plt.close()
 
-    # # recall
-    # plt.figure(figsize=(10, 10))
-    # plt.suptitle(model)
-    # plt.subplot(1, 1, 1)
-    # plt.xlabel('Distance to training set ' + '(' + feature_or_pixel + ')')
-    # plt.ylabel('Recall')
-    # # colors = cm.nipy_spectral(np.linspace(0, 1, len(np.unique(df['class']))))
-    # random.seed(100)
-    # colors = distinctipy.get_colors(len(np.unique(df['class'])), pastel_factor=0.7)
-    # for iclass, c in zip(np.unique(df['class']), colors):
-    #     plt.scatter(df[df['class'] == iclass].distance, df[df['class'] == iclass].recall, label=iclass, c=np.array([c]))
-    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
-    # # plt.xlim(0, 1)
-    # # plt.ylim(0, 1)
+    # recall
+    plt.figure(figsize=(10, 10))
+    plt.suptitle(model)
+    plt.subplot(1, 1, 1)
+    plt.xlabel('Distance to training set ' + '(' + feature_or_pixel + ')')
+    plt.ylabel('Recall')
+    # colors = cm.nipy_spectral(np.linspace(0, 1, len(np.unique(df['class']))))
+    random.seed(100)
+    colors = distinctipy.get_colors(len(np.unique(df['class'])), pastel_factor=0.7)
+    for iclass, c in zip(np.unique(df['class']), colors):
+        plt.scatter(df[df['class'] == iclass].distance, df[df['class'] == iclass].recall, label=iclass, c=np.array([c]))
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
+    # plt.xlim(0, 1)
+    # plt.ylim(0, 1)
     
-    # plt.tight_layout()
-    # if PCA == 'yes':
-    #     plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_recall_scatter_threshold_' + str(threshold) + '.png', dpi=300)
-    # elif PCA == 'no':
-    #     plt.savefig(outpath + model + '_' + feature_or_pixel + '_' + distance_type + '_distance_recall_scatter_threshold_' + str(threshold) + '.png', dpi=300)
-    # plt.close()
+    plt.tight_layout()
+    if PCA == 'yes':
+        plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_recall_scatter_threshold_' + str(threshold) + '.png', dpi=300)
+    elif PCA == 'no':
+        plt.savefig(outpath + model + '_' + feature_or_pixel + '_' + distance_type + '_distance_recall_scatter_threshold_' + str(threshold) + '.png', dpi=300)
+    plt.close()
 
 def plot_distance_F1_err(testsets, distance_txt_paths, F1_txt_paths, outpath, model, feature_or_pixel, PCA, threshold, distance_type):
     
@@ -183,9 +190,9 @@ def plot_distance_F1_err(testsets, distance_txt_paths, F1_txt_paths, outpath, mo
     F1_mean = []
     F1_std = []
     F1_sem = []
-    # recall_mean = []
-    # recall_std = []
-    # recall_sem = []
+    recall_mean = []
+    recall_std = []
+    recall_sem = []
     distance_mean = []
     distance_std = []
     distance_sem = []
@@ -198,12 +205,12 @@ def plot_distance_F1_err(testsets, distance_txt_paths, F1_txt_paths, outpath, mo
         F1_sem_testset = sem(df[df['testset'] == i]['F1'])
         F1_sem.append(F1_sem_testset)
 
-        # recall_mean_testset = np.average(df[df['testset'] == i]['recall'])
-        # recall_mean.append(recall_mean_testset)
-        # recall_std_testset = np.std(df[df['testset'] == i]['recall'])
-        # recall_std.append(recall_std_testset)
-        # recall_sem_testset = sem(df[df['testset'] == i]['recall'])
-        # recall_sem.append(recall_sem_testset)
+        recall_mean_testset = np.average(df[df['testset'] == i]['recall'])
+        recall_mean.append(recall_mean_testset)
+        recall_std_testset = np.std(df[df['testset'] == i]['recall'])
+        recall_std.append(recall_std_testset)
+        recall_sem_testset = sem(df[df['testset'] == i]['recall'])
+        recall_sem.append(recall_sem_testset)
 
         distance_mean_testset = np.average(df[df['testset'] == i]['distance'])
         distance_mean.append(distance_mean_testset)
@@ -241,33 +248,33 @@ def plot_distance_F1_err(testsets, distance_txt_paths, F1_txt_paths, outpath, mo
     plt.close()
     ax.clear()
 
-    # # recall
-    # fig = plt.figure(figsize=(10, 8))
-    # ax = plt.subplot(1, 1, 1)
-    # ax.set_xlabel('Testset')
-    # ax.set_ylabel('Recall')
-    # x = range(len(testsets))
-    # plt.xticks(x, labels=testsets)
-    # plt.ylim(-0.1, 1.1)
+    # recall
+    fig = plt.figure(figsize=(10, 8))
+    ax = plt.subplot(1, 1, 1)
+    ax.set_xlabel('Testset')
+    ax.set_ylabel('Recall')
+    x = range(len(testsets))
+    plt.xticks(x, labels=testsets)
+    plt.ylim(-0.1, 1.1)
 
-    # plt.errorbar(x, recall_mean, yerr=recall_sem, fmt='-s', color='g', capsize=5, label='recall')
+    plt.errorbar(x, recall_mean, yerr=recall_sem, fmt='-s', color='g', capsize=5, label='recall')
 
-    # ax_2 = ax.twinx()
-    # ax_2.set_ylabel('1 - ' + distance_type + ' Distance to training set')
-    # plt.errorbar(x, np.subtract(1, distance_mean), yerr=distance_sem, fmt='-s', color='r', capsize=5, label='1 - ' + distance_type +' Distance')
-    # # plt.errorbar(x, distance_mean, yerr=distance_sem, fmt='-s', color='r', capsize=5, label=distance_type+' Distance')
-    # plt.ylim(0.95*np.min(np.subtract(1, distance_mean)), 1.05*np.max(np.subtract(1, distance_mean)))
-    # # plt.ylim(0.4, 1)
+    ax_2 = ax.twinx()
+    ax_2.set_ylabel('1 - ' + distance_type + ' Distance to training set')
+    plt.errorbar(x, np.subtract(1, distance_mean), yerr=distance_sem, fmt='-s', color='r', capsize=5, label='1 - ' + distance_type +' Distance')
+    # plt.errorbar(x, distance_mean, yerr=distance_sem, fmt='-s', color='r', capsize=5, label=distance_type+' Distance')
+    plt.ylim(0.95*np.min(np.subtract(1, distance_mean)), 1.05*np.max(np.subtract(1, distance_mean)))
+    # plt.ylim(0.4, 1)
 
-    # fig.legend(loc=1, bbox_to_anchor=(1, 1), bbox_transform=ax.transAxes)
-    # plt.tight_layout()
-    # Path(outpath).mkdir(parents=True, exist_ok=True)
-    # if PCA == 'yes':
-    #     plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_recall_err_threshold_' + str(threshold) + '.png', dpi=300)
-    # elif PCA == 'no':
-    #     plt.savefig(outpath + model + '_' + feature_or_pixel + '_' + distance_type + '_distance_recall_err_threshold_' + str(threshold) + '.png', dpi=300)
-    # plt.close()
-    # ax.clear()
+    fig.legend(loc=1, bbox_to_anchor=(1, 1), bbox_transform=ax.transAxes)
+    plt.tight_layout()
+    Path(outpath).mkdir(parents=True, exist_ok=True)
+    if PCA == 'yes':
+        plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_recall_err_threshold_' + str(threshold) + '.png', dpi=300)
+    elif PCA == 'no':
+        plt.savefig(outpath + model + '_' + feature_or_pixel + '_' + distance_type + '_distance_recall_err_threshold_' + str(threshold) + '.png', dpi=300)
+    plt.close()
+    ax.clear()
 
 def plot_distance_F1_testset(testsets, distance_txt_paths, F1_txt_paths, outpath, model, feature_or_pixel, PCA, threshold, distance_type, class_filter):
     print('------------plotting global correlation of distance and F1 (PCA: {}, threshold: {}, distance: {}, class_filter: {})------------'.format(PCA, threshold, distance_type, class_filter))
@@ -306,7 +313,10 @@ def plot_distance_F1_testset(testsets, distance_txt_paths, F1_txt_paths, outpath
         F1_sem.append(F1_sem_testset)
         # recall_mean_testset = np.average(df[df['testset'] == i]['recall'])
         # recall_mean.append(recall_mean_testset)
-        # recall_sem_testset = sem(df[df['testset'] == i]['recall'])
+        # if len(df[df['testset'] == i]['recall']) > 1:
+        #     recall_sem_testset = sem(df[df['testset'] == i]['recall'])
+        # else:
+        #     recall_sem_testset = 0
         # recall_sem.append(recall_sem_testset)
         distance_mean_testset = np.average(df[df['testset'] == i]['distance'])
         distance_mean.append(distance_mean_testset)
@@ -319,7 +329,7 @@ def plot_distance_F1_testset(testsets, distance_txt_paths, F1_txt_paths, outpath
     # F1
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('F1-score')
     random.seed(100)
     colors = distinctipy.get_colors(len(testsets), pastel_factor=0.7)
@@ -345,7 +355,7 @@ def plot_distance_F1_testset(testsets, distance_txt_paths, F1_txt_paths, outpath
 
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('F1-score')
     x = np.array([])
     y = np.array([])
@@ -392,7 +402,7 @@ def plot_distance_F1_testset(testsets, distance_txt_paths, F1_txt_paths, outpath
 
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('F1-score')
     # for i, itestset in enumerate(testsets):
     #     plt.errorbar(x=distance_mean[i], y=F1_drop_mean[i], xerr=distance_sem[i], yerr=F1_drop_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=itestset + ' (mean)')
@@ -413,7 +423,7 @@ def plot_distance_F1_testset(testsets, distance_txt_paths, F1_txt_paths, outpath
 
     # plt.figure(figsize=(10, 10))
     # plt.subplot(1, 1, 1)
-    # plt.xlabel('Distance to training set')
+    # plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     # plt.ylabel('F1-score')
     # for i, itestset in enumerate(testsets):
     #     plt.errorbar(x=distance_mean[i], y=F1_mean[i], xerr=distance_sem[i], yerr=F1_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=itestset)
@@ -428,7 +438,7 @@ def plot_distance_F1_testset(testsets, distance_txt_paths, F1_txt_paths, outpath
 
     # plt.figure(figsize=(10, 10))
     # plt.subplot(1, 1, 1)
-    # plt.xlabel('Distance to training set')
+    # plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     # plt.ylabel('F1-score')
     # for i, itestset in enumerate(testsets):
     #     plt.errorbar(x=distance_mean[i], y=F1_mean[i], xerr=distance_sem[i], yerr=F1_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=itestset)
@@ -468,6 +478,99 @@ def plot_distance_F1_testset(testsets, distance_txt_paths, F1_txt_paths, outpath
     # plt.legend(loc='best')
     # plt.tight_layout()
     # Path(outpath).mkdir(parents=True, exist_ok=True)
+    # if PCA == 'yes':
+    #     plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_recall_testset_scatter_err_threshold_' + str(threshold) + '.png', dpi=300)
+    # elif PCA == 'no':
+    #     plt.savefig(outpath + model + '_' + feature_or_pixel + '_' + distance_type + '_distance_recall_testset_scatter_err_threshold_' + str(threshold) + '.png', dpi=300)
+    # plt.close()
+
+
+
+    # plt.figure(figsize=(12, 12))
+    # plt.subplot(1, 1, 1)
+    # plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
+    # plt.ylabel('Recall')
+    # random.seed(100)
+    # colors = distinctipy.get_colors(len(testsets), pastel_factor=0.7)
+    # for i, (itestset, c) in enumerate(zip(testsets, colors)):
+    #     plt.errorbar(x=distance_mean[i], y=recall_mean[i], xerr=distance_sem[i], yerr=recall_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=itestset + ' (mean)', c=np.array([c]))
+
+    # # for i, itestset in enumerate(testsets):
+    # #     plt.errorbar(x=distance_mean[i], y=recall_drop_mean[i], xerr=distance_sem[i], yerr=recall_drop_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=itestset + ' (mean)')
+
+    # correlation, p_value = pearsonr(np.array(distance_mean), np.array(recall_mean))
+    # reg = LinearRegression().fit(np.array(distance_mean).reshape(-1, 1), np.array(recall_mean))
+    # y_fit = reg.predict(np.array(distance_mean).reshape(-1, 1))
+    # plt.plot(np.array(distance_mean), y_fit, color='red', label='regression line')
+    # # plt.title('r = %s' % round(correlation, 3))
+    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
+    # plt.tight_layout()
+    # Path(outpath).mkdir(parents=True, exist_ok=True)
+    # if PCA == 'yes':
+    #     plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_recall_testset_err_threshold_' + str(threshold) + '.png', dpi=300)
+    # elif PCA == 'no':
+    #     plt.savefig(outpath + model + '_' + feature_or_pixel + '_' + distance_type + '_distance_recall_testset_err_threshold_' + str(threshold) + '.png', dpi=300)
+    # plt.close()
+
+    # plt.figure(figsize=(12, 12))
+    # plt.subplot(1, 1, 1)
+    # plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
+    # plt.ylabel('Recall')
+    # x = np.array([])
+    # y = np.array([])
+    # # for i, itestset in enumerate(testsets):
+    # #     plt.errorbar(x=distance_mean[i], y=recall_drop_mean[i], xerr=distance_sem[i], yerr=recall_drop_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=itestset + ' (mean)')
+    # #     plt.scatter(x=df[df['testset'] == itestset].distance, y=df[df['testset'] == itestset].recall_drop, label=itestset, alpha=0.6)
+    # for i, (itestset, c) in enumerate(zip(testsets, colors)):
+    #     plt.errorbar(x=distance_mean[i], y=recall_mean[i], xerr=distance_sem[i], yerr=recall_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=itestset + ' (mean)', c=np.array([c]))
+    #     plt.scatter(x=df[df['testset'] == itestset].distance, y=df[df['testset'] == itestset].recall, label=itestset, alpha=0.6, c=np.array([c]))
+    #     x = np.concatenate((x, np.array(df[df['testset'] == itestset]['distance'])), axis=None)
+    #     y = np.concatenate((y, np.array(df[df['testset'] == itestset].recall)), axis=None)
+    # correlation, p_value = pearsonr(x, y)
+    # # reg = LinearRegression().fit(x.reshape(-1, 1), y)
+    # # y_fit = reg.predict(x.reshape(-1, 1))
+    # x, y = x.astype(float), y.astype(float)
+    # xy = np.stack((x, y), axis=0)
+    # xy_sorted = xy.T[xy.T[:, 0].argsort()].T
+    # x, y = xy_sorted[0], xy_sorted[1]
+    # a, b = np.polyfit(x, y, deg=1)
+    # y_fit = a * x + b
+    # y_err = x.std() * np.sqrt(1/len(x) + (x - x.mean())**2 / np.sum((x - x.mean())**2))
+    # plt.fill_between(x, y_fit - y_err, y_fit + y_err, alpha=0.2)
+    # # plt.plot(x, y_fit - y_err)
+    # # plt.plot(x, y_fit + y_err)
+    # plt.plot(x, y_fit, color='red', label='Mean regression')
+
+    # quantiles = [0.05, 0.5, 0.95]
+    # predictions = {}
+    # for quantile in quantiles:
+    #     qr = QuantileRegressor(quantile=quantile, alpha=0, solver="highs")
+    #     y_pred = qr.fit(x.reshape(-1, 1), y).predict(x.reshape(-1, 1))
+    #     predictions[quantile] = y_pred
+    # for quantile, y_pred in predictions.items():
+    #     plt.plot(x.reshape(-1, 1), y_pred, label=f"Quantile: {quantile}", dashes=[6, 2])
+
+    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
+    # # plt.title('r = %s' % round(correlation, 3))
+    # plt.tight_layout()
+    # if PCA == 'yes':
+    #     plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_recall_testset_scatter_threshold_' + str(threshold) + '.png', dpi=300)
+    # elif PCA == 'no':
+    #     plt.savefig(outpath + model + '_' + feature_or_pixel + '_' + distance_type + '_distance_recall_testset_scatter_threshold_' + str(threshold) + '.png', dpi=300)
+    # plt.close()
+
+    # plt.figure(figsize=(12, 12))
+    # plt.subplot(1, 1, 1)
+    # plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
+    # plt.ylabel('Recall')
+    # # for i, itestset in enumerate(testsets):
+    # #     plt.errorbar(x=distance_mean[i], y=recall_drop_mean[i], xerr=distance_sem[i], yerr=recall_drop_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=itestset + ' (mean)')
+    # #     plt.scatter(x=df[df['testset'] == itestset].distance, y=df[df['testset'] == itestset].recall_drop, label=itestset, alpha=0.6)
+    # for i, (itestset, c) in enumerate(zip(testsets, colors)):
+    #     plt.errorbar(x=distance_mean[i], y=recall_mean[i], xerr=distance_sem[i], yerr=recall_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=itestset + ' (mean)', c=np.array([c]))
+    #     plt.scatter(x=df[df['testset'] == itestset].distance, y=df[df['testset'] == itestset].recall, label=itestset, alpha=0.6, c=np.array([c]))
+    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
+    # plt.tight_layout()
     # if PCA == 'yes':
     #     plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_recall_testset_scatter_err_threshold_' + str(threshold) + '.png', dpi=300)
     # elif PCA == 'no':
@@ -520,7 +623,10 @@ def plot_distance_F1_class(testsets, distance_txt_paths, F1_txt_paths, outpath, 
         F1_sem.append(F1_sem_class)
         # recall_mean_class = np.average(df[df['class'] == i]['recall'])
         # recall_mean.append(recall_mean_class)
-        # recall_sem_class = sem(df[df['class'] == i]['recall'])
+        # if len(df[df['class'] == i]['recall']) > 1:
+        #     recall_sem_class = sem(df[df['class'] == i]['recall'])
+        # else:
+        #     recall_sem_class = 0
         # recall_sem.append(recall_sem_class)
         distance_mean_class = np.average(df[df['class'] == i]['distance'])
         distance_mean.append(distance_mean_class)
@@ -533,7 +639,7 @@ def plot_distance_F1_class(testsets, distance_txt_paths, F1_txt_paths, outpath, 
     # F1
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('F1-score')
     random.seed(100)
     colors = distinctipy.get_colors(len(classes), pastel_factor=0.7)
@@ -565,7 +671,7 @@ def plot_distance_F1_class(testsets, distance_txt_paths, F1_txt_paths, outpath, 
 
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('F1-score')
     x = np.array([])
     y = np.array([])
@@ -610,7 +716,7 @@ def plot_distance_F1_class(testsets, distance_txt_paths, F1_txt_paths, outpath, 
 
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('F1-score')
     
     for i, (iclass, c) in enumerate(zip(classes, colors)):
@@ -626,7 +732,7 @@ def plot_distance_F1_class(testsets, distance_txt_paths, F1_txt_paths, outpath, 
 
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('F1-score')
     for i, (iclass, c) in enumerate(zip(classes, colors)):
         plt.scatter(x=df[df['class'] == iclass].distance, y=df[df['class'] == iclass].F1, label=iclass, alpha=0.6, c=np.array([c]))
@@ -691,6 +797,8 @@ def plot_distance_F1_drop_testset(testsets, distance_txt_paths, train_F1_txt_pat
 
     F1_drop_mean = []
     F1_drop_sem = []
+    recall_drop_mean = []
+    recall_drop_sem = []
     distance_mean = []
     distance_sem = []
     for i in testsets:
@@ -701,6 +809,14 @@ def plot_distance_F1_drop_testset(testsets, distance_txt_paths, train_F1_txt_pat
         else:
             F1_drop_sem_testset = 0
         F1_drop_sem.append(F1_drop_sem_testset)
+
+        recall_drop_mean_testset = np.average(df[df['testset'] == i]['recall_drop'])
+        recall_drop_mean.append(recall_drop_mean_testset)
+        if len(df[df['testset'] == i]['recall_drop']) > 1:
+            recall_drop_sem_testset = sem(df[df['testset'] == i]['recall_drop'])
+        else:
+            recall_drop_sem_testset = 0
+        recall_drop_sem.append(recall_drop_sem_testset)
 
         distance_mean_testset = np.average(df[df['testset'] == i].distance)
         distance_mean.append(distance_mean_testset)
@@ -713,7 +829,7 @@ def plot_distance_F1_drop_testset(testsets, distance_txt_paths, train_F1_txt_pat
     # F1
     plt.figure(figsize=(9, 9))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('F1 drop ratio')
     random.seed(100)
     colors = distinctipy.get_colors(len(testsets), pastel_factor=0.7)
@@ -739,7 +855,7 @@ def plot_distance_F1_drop_testset(testsets, distance_txt_paths, train_F1_txt_pat
 
     plt.figure(figsize=(9, 10))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('F1 drop ratio')
     x = np.array([])
     y = np.array([])
@@ -786,7 +902,7 @@ def plot_distance_F1_drop_testset(testsets, distance_txt_paths, train_F1_txt_pat
 
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('F1 drop ratio')
     # for i, itestset in enumerate(testsets):
     #     plt.errorbar(x=distance_mean[i], y=F1_drop_mean[i], xerr=distance_sem[i], yerr=F1_drop_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=itestset + ' (mean)')
@@ -800,6 +916,99 @@ def plot_distance_F1_drop_testset(testsets, distance_txt_paths, train_F1_txt_pat
         plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_F1_drop_testset_scatter_err_threshold_' + str(threshold) + '.png', dpi=300)
     elif PCA == 'no':
         plt.savefig(outpath + model + '_' + feature_or_pixel + '_' + distance_type + '_distance_F1_drop_testset_scatter_err_threshold_' + str(threshold) + '.png', dpi=300)
+    plt.close()
+
+
+    # recall
+    plt.figure(figsize=(9, 9))
+    plt.subplot(1, 1, 1)
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
+    plt.ylabel('Recall drop ratio')
+    random.seed(100)
+    colors = distinctipy.get_colors(len(testsets), pastel_factor=0.7)
+    for i, (itestset, c) in enumerate(zip(testsets, colors)):
+        plt.errorbar(x=distance_mean[i], y=recall_drop_mean[i], xerr=distance_sem[i], yerr=recall_drop_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=itestset + ' (mean)', c=np.array([c]))
+
+    # for i, itestset in enumerate(testsets):
+    #     plt.errorbar(x=distance_mean[i], y=recall_drop_mean[i], xerr=distance_sem[i], yerr=recall_drop_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=itestset + ' (mean)')
+
+    correlation, p_value = pearsonr(np.array(distance_mean), np.array(recall_drop_mean))
+    reg = LinearRegression().fit(np.array(distance_mean).reshape(-1, 1), np.array(recall_drop_mean))
+    y_fit = reg.predict(np.array(distance_mean).reshape(-1, 1))
+    plt.plot(np.array(distance_mean), y_fit, color='red', label='regression line')
+    # plt.title('r = %s' % round(correlation, 3))
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
+    plt.tight_layout()
+    Path(outpath).mkdir(parents=True, exist_ok=True)
+    if PCA == 'yes':
+        plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_recall_drop_testset_err_threshold_' + str(threshold) + '.png', dpi=300)
+    elif PCA == 'no':
+        plt.savefig(outpath + model + '_' + feature_or_pixel + '_' + distance_type + '_distance_recall_drop_testset_err_threshold_' + str(threshold) + '.png', dpi=300)
+    plt.close()
+
+    plt.figure(figsize=(9, 10))
+    plt.subplot(1, 1, 1)
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
+    plt.ylabel('Recall drop ratio')
+    x = np.array([])
+    y = np.array([])
+    # for i, itestset in enumerate(testsets):
+    #     plt.errorbar(x=distance_mean[i], y=recall_drop_mean[i], xerr=distance_sem[i], yerr=recall_drop_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=itestset + ' (mean)')
+    #     plt.scatter(x=df[df['testset'] == itestset].distance, y=df[df['testset'] == itestset].recall_drop, label=itestset, alpha=0.6)
+    for i, (itestset, c) in enumerate(zip(testsets, colors)):
+        plt.errorbar(x=distance_mean[i], y=recall_drop_mean[i], xerr=distance_sem[i], yerr=recall_drop_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=itestset + ' (mean)', c=np.array([c]))
+        plt.scatter(x=df[df['testset'] == itestset].distance, y=df[df['testset'] == itestset].recall_drop, label=itestset, alpha=0.6, c=np.array([c]))
+        x = np.concatenate((x, np.array(df[df['testset'] == itestset]['distance'])), axis=None)
+        y = np.concatenate((y, np.array(df[df['testset'] == itestset].recall_drop)), axis=None)
+    correlation, p_value = pearsonr(x, y)
+    # reg = LinearRegression().fit(x.reshape(-1, 1), y)
+    # y_fit = reg.predict(x.reshape(-1, 1))
+    x, y = x.astype(float), y.astype(float)
+    xy = np.stack((x, y), axis=0)
+    xy_sorted = xy.T[xy.T[:, 0].argsort()].T
+    x, y = xy_sorted[0], xy_sorted[1]
+    a, b = np.polyfit(x, y, deg=1)
+    y_fit = a * x + b
+    y_err = x.std() * np.sqrt(1/len(x) + (x - x.mean())**2 / np.sum((x - x.mean())**2))
+    plt.fill_between(x, y_fit - y_err, y_fit + y_err, alpha=0.2)
+    # plt.plot(x, y_fit - y_err)
+    # plt.plot(x, y_fit + y_err)
+    plt.plot(x, y_fit, color='red', label='Mean regression')
+
+    quantiles = [0.05, 0.5, 0.95]
+    predictions = {}
+    for quantile in quantiles:
+        qr = QuantileRegressor(quantile=quantile, alpha=0, solver="highs")
+        y_pred = qr.fit(x.reshape(-1, 1), y).predict(x.reshape(-1, 1))
+        predictions[quantile] = y_pred
+    for quantile, y_pred in predictions.items():
+        plt.plot(x.reshape(-1, 1), y_pred, label=f"Quantile: {quantile}", dashes=[6, 2])
+
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
+    # plt.title('r = %s' % round(correlation, 3))
+    plt.tight_layout()
+    if PCA == 'yes':
+        plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_recall_drop_testset_scatter_threshold_' + str(threshold) + '.png', dpi=300)
+    elif PCA == 'no':
+        plt.savefig(outpath + model + '_' + feature_or_pixel + '_' + distance_type + '_distance_recall_drop_testset_scatter_threshold_' + str(threshold) + '.png', dpi=300)
+    plt.close()
+
+    plt.figure(figsize=(12, 12))
+    plt.subplot(1, 1, 1)
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
+    plt.ylabel('Recall drop ratio')
+    # for i, itestset in enumerate(testsets):
+    #     plt.errorbar(x=distance_mean[i], y=recall_drop_mean[i], xerr=distance_sem[i], yerr=recall_drop_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=itestset + ' (mean)')
+    #     plt.scatter(x=df[df['testset'] == itestset].distance, y=df[df['testset'] == itestset].recall_drop, label=itestset, alpha=0.6)
+    for i, (itestset, c) in enumerate(zip(testsets, colors)):
+        plt.errorbar(x=distance_mean[i], y=recall_drop_mean[i], xerr=distance_sem[i], yerr=recall_drop_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=itestset + ' (mean)', c=np.array([c]))
+        plt.scatter(x=df[df['testset'] == itestset].distance, y=df[df['testset'] == itestset].recall_drop, label=itestset, alpha=0.6, c=np.array([c]))
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
+    plt.tight_layout()
+    if PCA == 'yes':
+        plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_recall_drop_testset_scatter_err_threshold_' + str(threshold) + '.png', dpi=300)
+    elif PCA == 'no':
+        plt.savefig(outpath + model + '_' + feature_or_pixel + '_' + distance_type + '_distance_recall_drop_testset_scatter_err_threshold_' + str(threshold) + '.png', dpi=300)
     plt.close()
 
 def plot_distance_F1_drop_class(testsets, distance_txt_paths, train_F1_txt_path, F1_txt_paths, outpath, model, feature_or_pixel, PCA, threshold, distance_type, class_filter):    
@@ -834,6 +1043,8 @@ def plot_distance_F1_drop_class(testsets, distance_txt_paths, train_F1_txt_path,
     
     F1_drop_mean = []
     F1_drop_sem = []
+    recall_drop_mean = []
+    recall_drop_sem = []
     distance_mean = []
     distance_sem = []
     for i in classes:
@@ -844,6 +1055,14 @@ def plot_distance_F1_drop_class(testsets, distance_txt_paths, train_F1_txt_path,
         else:
             F1_drop_sem_class = 0
         F1_drop_sem.append(F1_drop_sem_class)
+
+        recall_drop_mean_class = np.average(df[df['class'] == i]['recall_drop'])
+        recall_drop_mean.append(recall_drop_mean_class)
+        if len(df[df['class'] == i]['recall_drop']) > 1:
+            recall_drop_sem_class = sem(df[df['class'] == i]['recall_drop'])
+        else:
+            recall_drop_sem_class = 0
+        recall_drop_sem.append(recall_drop_sem_class)
 
         distance_mean_class = np.average(df[df['class'] == i].distance)
         distance_mean.append(distance_mean_class)
@@ -856,7 +1075,7 @@ def plot_distance_F1_drop_class(testsets, distance_txt_paths, train_F1_txt_path,
     # F1
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('F1 drop ratio')
     random.seed(100)
     colors = distinctipy.get_colors(len(classes), pastel_factor=0.7)
@@ -887,7 +1106,7 @@ def plot_distance_F1_drop_class(testsets, distance_txt_paths, train_F1_txt_path,
 
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('F1 drop ratio')
     x = np.array([])
     y = np.array([])
@@ -931,7 +1150,7 @@ def plot_distance_F1_drop_class(testsets, distance_txt_paths, train_F1_txt_path,
 
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('F1 drop ratio')
     for i, (iclass, c) in enumerate(zip(classes, colors)):
         plt.errorbar(x=distance_mean[i], y=F1_drop_mean[i], xerr=distance_sem[i], yerr=F1_drop_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=iclass + ' (mean)', c=np.array([c]))
@@ -947,7 +1166,7 @@ def plot_distance_F1_drop_class(testsets, distance_txt_paths, train_F1_txt_path,
 
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('F1 drop ratio')
     for i, (iclass, c) in enumerate(zip(classes, colors)):
         plt.scatter(x=df[df['class'] == iclass].distance, y=df[df['class'] == iclass].F1_drop, label=iclass, alpha=0.6, c=np.array([c]))
@@ -967,6 +1186,123 @@ def plot_distance_F1_drop_class(testsets, distance_txt_paths, train_F1_txt_path,
         plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_F1_drop_class_scatter_per_class_threshold_' + str(threshold) + '.png', dpi=300)
     elif PCA == 'no':
         plt.savefig(outpath + model + '_' + feature_or_pixel + '_' + distance_type + '_distance_F1_drop_class_scatter_per_class_threshold_' + str(threshold) + '.png', dpi=300)
+    plt.close()
+
+
+    # recall
+    plt.figure(figsize=(12, 12))
+    plt.subplot(1, 1, 1)
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
+    plt.ylabel('Recall drop ratio')
+    random.seed(100)
+    colors = distinctipy.get_colors(len(classes), pastel_factor=0.7)
+    for i, (iclass, c) in enumerate(zip(classes, colors)):
+        plt.errorbar(x=distance_mean[i], y=recall_drop_mean[i], xerr=distance_sem[i], yerr=recall_drop_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=iclass + ' (mean)', c=np.array([c]))
+
+    correlation, p_value = pearsonr(np.array(distance_mean), np.array(recall_drop_mean))
+    reg = LinearRegression().fit(np.array(distance_mean).reshape(-1, 1), np.array(recall_drop_mean))
+    y_fit = reg.predict(np.array(distance_mean).reshape(-1, 1))
+    plt.plot(np.array(distance_mean), y_fit, color='red', label='regression line')
+    # plt.title('r = %s' % round(correlation, 3))
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
+    plt.tight_layout()
+    Path(outpath).mkdir(parents=True, exist_ok=True)
+    if PCA == 'yes':
+        plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_recall_drop_class_err_threshold_' + str(threshold) + '.png', dpi=300)
+    elif PCA == 'no':
+        plt.savefig(outpath + model + '_' + feature_or_pixel + '_' + distance_type + '_distance_recall_drop_class_err_threshold_' + str(threshold) + '.png', dpi=300)
+    plt.close()
+
+    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
+    # plt.tight_layout()
+    # if PCA == 'yes':
+    #     plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_recall_drop_class_err_threshold_' + str(threshold) + '.png', dpi=300)
+    # elif PCA == 'no':
+    #     plt.savefig(outpath + model + '_' + feature_or_pixel + '_' + distance_type + '_distance_recall_drop_class_err_threshold_' + str(threshold) + '.png', dpi=300)
+    # plt.close()
+
+    plt.figure(figsize=(12, 12))
+    plt.subplot(1, 1, 1)
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
+    plt.ylabel('Recall drop ratio')
+    x = np.array([])
+    y = np.array([])
+    for i, (iclass, c) in enumerate(zip(classes, colors)):
+        plt.errorbar(x=distance_mean[i], y=recall_drop_mean[i], xerr=distance_sem[i], yerr=recall_drop_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=iclass + ' (mean)', c=np.array([c]))
+        plt.scatter(x=df[df['class'] == iclass].distance, y=df[df['class'] == iclass].recall_drop, label=iclass, alpha=0.6, c=np.array([c]))
+        x = np.concatenate((x, np.array(df[df['class'] == iclass]['distance'])), axis=None)
+        y = np.concatenate((y, np.array(df[df['class'] == iclass].recall_drop)), axis=None)
+    correlation, p_value = pearsonr(x, y)
+    # reg = LinearRegression().fit(x.reshape(-1, 1), y)
+    # y_fit = reg.predict(x.reshape(-1, 1))
+    x, y = x.astype(float), y.astype(float)
+    xy = np.stack((x, y), axis=0)
+    xy_sorted = xy.T[xy.T[:, 0].argsort()].T
+    x, y = xy_sorted[0], xy_sorted[1]
+    a, b = np.polyfit(x, y, deg=1)
+    y_fit = a * x + b
+    y_err = x.std() * np.sqrt(1/len(x) + (x - x.mean())**2 / np.sum((x - x.mean())**2))
+    plt.fill_between(x, y_fit - y_err, y_fit + y_err, alpha=0.2)
+    # plt.plot(x, y_fit - y_err)
+    # plt.plot(x, y_fit + y_err)
+    plt.plot(x, y_fit, color='red', label='Mean regression')
+
+    quantiles = [0.05, 0.5, 0.95]
+    predictions = {}
+    for quantile in quantiles:
+        qr = QuantileRegressor(quantile=quantile, alpha=0, solver="highs")
+        y_pred = qr.fit(x.reshape(-1, 1), y).predict(x.reshape(-1, 1))
+        predictions[quantile] = y_pred
+    for quantile, y_pred in predictions.items():
+        plt.plot(x.reshape(-1, 1), y_pred, label=f"Quantile: {quantile}", dashes=[6, 2])
+    
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
+    # plt.title('r = %s' % round(correlation, 3))
+    plt.tight_layout()
+    if PCA == 'yes':
+        plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_recall_drop_class_scatter_threshold_' + str(threshold) + '.png', dpi=300)
+    elif PCA == 'no':
+        plt.savefig(outpath + model + '_' + feature_or_pixel + '_' + distance_type + '_distance_recall_drop_class_scatter_threshold_' + str(threshold) + '.png', dpi=300)
+    plt.close()
+
+    plt.figure(figsize=(12, 12))
+    plt.subplot(1, 1, 1)
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
+    plt.ylabel('Recall drop ratio')
+    for i, (iclass, c) in enumerate(zip(classes, colors)):
+        plt.errorbar(x=distance_mean[i], y=recall_drop_mean[i], xerr=distance_sem[i], yerr=recall_drop_sem[i], fmt='s', elinewidth=1, capthick=1, capsize=3, markersize=12, label=iclass + ' (mean)', c=np.array([c]))
+        plt.scatter(x=df[df['class'] == iclass].distance, y=df[df['class'] == iclass].recall_drop, label=iclass, alpha=0.6, c=np.array([c]))
+    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
+    plt.tight_layout()
+    if PCA == 'yes':
+        plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_recall_drop_class_scatter_err_threshold_' + str(threshold) + '.png', dpi=300)
+    elif PCA == 'no':
+        plt.savefig(outpath + model + '_' + feature_or_pixel + '_' + distance_type + '_distance_recall_drop_class_scatter_err_threshold_' + str(threshold) + '.png', dpi=300)
+    plt.close()
+
+    plt.figure(figsize=(12, 12))
+    plt.subplot(1, 1, 1)
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
+    plt.ylabel('Recall drop ratio')
+    for i, (iclass, c) in enumerate(zip(classes, colors)):
+        plt.scatter(x=df[df['class'] == iclass].distance, y=df[df['class'] == iclass].recall_drop, label=iclass, alpha=0.6, c=np.array([c]))
+        x = np.array([])
+        y = np.array([])
+        for itestset in df[df['class'] == iclass].testset.values:
+            x = np.concatenate((x, df[(df['class'] == iclass) & (df['testset'] == itestset)].distance), axis=None)
+            y = np.concatenate((y, df[(df['class'] == iclass) & (df['testset'] == itestset)].recall_drop), axis=None)
+        # correlation, p_value = pearsonr(x, y)
+        reg = LinearRegression().fit(x.reshape(-1, 1), y)
+        y_fit = reg.predict(x.reshape(-1, 1))
+        plt.plot(x, y_fit, color=np.array([c]))
+    # plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=5)
+    plt.tight_layout()
+    if PCA == 'yes':
+        plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_recall_drop_class_scatter_per_class_threshold_' + str(threshold) + '.png', dpi=300)
+    elif PCA == 'no':
+        plt.savefig(outpath + model + '_' + feature_or_pixel + '_' + distance_type + '_distance_recall_drop_class_scatter_per_class_threshold_' + str(threshold) + '.png', dpi=300)
     plt.close()
 
 def plot_distance_F1_drop(testsets, distance_dfs, train_F1_txt_path, F1_txt_paths, outpath, model, feature_or_pixel, PCA, threshold, distance_type, class_filter):
@@ -992,7 +1328,7 @@ def plot_distance_F1_drop(testsets, distance_dfs, train_F1_txt_path, F1_txt_path
     
     plt.figure(figsize=(12, 9))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}^{f}$')
     plt.ylabel('F1 drop ratio')
     random.seed(100)
     colors = distinctipy.get_colors(len(df.columns.values[6:-1]), pastel_factor=0.7)
@@ -1001,6 +1337,7 @@ def plot_distance_F1_drop(testsets, distance_dfs, train_F1_txt_path, F1_txt_path
     distance_mean_global = []
     distance_sem_global = []
     
+    slope_per_feature = {}
     for ifeature, c in zip(df.columns.values[6:-1], colors):
         F1_drop_mean = []
         F1_drop_sem = []
@@ -1024,25 +1361,32 @@ def plot_distance_F1_drop(testsets, distance_dfs, train_F1_txt_path, F1_txt_path
         weights = 1 / np.sqrt(np.array(distance_sem)**2 + np.array(F1_drop_sem)**2)
         params, covariance = curve_fit(linear_func, distance_mean, F1_drop_mean, sigma=weights)
         a = params[0]
+        slope_per_feature[ifeature] = a
         b = params[1]
         F1_drop_mean_pred = a * np.array(distance_mean) + b
-        # plt.errorbar(distance_mean, F1_drop_mean, xerr=distance_sem, yerr=F1_drop_sem, fmt='s', elinewidth=1, capthick=1, capsize=3, c=np.array([c]), alpha=0.3)
-        
+
+        # All features
+        plt.errorbar(distance_mean, F1_drop_mean, xerr=distance_sem, yerr=F1_drop_sem, fmt='s', elinewidth=1, capthick=1, capsize=3, c=np.array([c]), alpha=0.3)
         # plt.errorbar(distance_mean, F1_drop_mean, fmt='s', elinewidth=1, capthick=1, capsize=3, c=np.array([c]), alpha=0.3)
 #         plt.plot(distance_mean, F1_drop_mean_pred, color=np.array([c]), label=ifeature)
         if a > 0.8:
-            plt.axline((distance_mean[0], F1_drop_mean_pred[0]), slope=a, color=np.array([c]), label=ifeature, linewidth=3, linestyle='--')
-        # else:
-        #     plt.axline((distance_mean[0], F1_drop_mean_pred[0]), slope=a, color=np.array([c]), label=ifeature, linewidth=0.8)
-        
+            plt.axline((distance_mean[0], F1_drop_mean_pred[0]), slope=a, color=np.array([c]), label=ifeature, linewidth=3)
+        else:
+            plt.axline((distance_mean[0], F1_drop_mean_pred[0]), slope=a, color=np.array([c]), label=ifeature, linewidth=0.8)
         # plt.axline((distance_mean[0], F1_drop_mean_pred[0]), (distance_mean[-1], F1_drop_mean_pred[-1]), color=np.array([c]), label=ifeature)
-    
+
+
+        # # Simplified
+        # if a > 0.8:
+        #     plt.axline((distance_mean[0], F1_drop_mean_pred[0]), slope=a, color=np.array([c]), label=ifeature, linewidth=3)
+        
+
     weights_global = 1 / np.sqrt(np.array(distance_sem_global)**2 + np.array(F1_drop_sem_global)**2)
     params_global, covariance_global = curve_fit(linear_func, distance_mean_global, F1_drop_mean_global, sigma=weights_global)
     a_global = params_global[0]
     b_global = params_global[1]
     F1_drop_mean_pred_global = a_global * np.array(distance_mean_global) + b_global
-    plt.axline((distance_mean_global[0], F1_drop_mean_pred_global[0]), slope=a_global, color='black', label='average', linewidth=3)
+    plt.axline((distance_mean_global[0], F1_drop_mean_pred_global[0]), slope=a_global, color='black', label='average', linewidth=3, linestyle='--')
 
     plt.ylim(-0.03, 0.3)
     plt.xlim(0.05, 0.4)
@@ -1053,6 +1397,20 @@ def plot_distance_F1_drop(testsets, distance_dfs, train_F1_txt_path, F1_txt_path
         plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_F1_drop_per_feature_threshold_' + str(threshold) + '.png', dpi=300)
     elif PCA == 'no':
         plt.savefig(outpath + model + '_' + feature_or_pixel + '_' + distance_type + '_distance_F1_drop_per_feature_threshold_' + str(threshold) + '.png', dpi=300)
+    plt.close()
+
+    sorted_slope = dict(sorted(slope_per_feature.items(), key=lambda item: item[1], reverse=True))
+    plt.figure(figsize=(15, 7))
+    plt.subplot(1, 1, 1)
+    plt.bar(x=range(len(df.columns.values[6:-1])), height=sorted_slope.values(), color='royalblue')
+    plt.xticks(range(len(df.columns.values[6:-1])), labels=sorted_slope.keys(), rotation=45, rotation_mode='anchor', ha='right')
+    plt.xlabel('Feature')
+    plt.ylabel('Sensitivity ' + r'$Q_{F_1}$')
+    plt.tight_layout()
+    if PCA == 'yes':
+        plt.savefig(outpath + model + '_' + feature_or_pixel + '_PCA_' + distance_type + '_distance_F1_feature_slope_threshold_' + str(threshold) + '.png', dpi=300)
+    elif PCA == 'no':
+        plt.savefig(outpath + model + '_' + feature_or_pixel + '_' + distance_type + '_distance_F1_feature_slope_threshold_' + str(threshold) + '.png', dpi=300)
     plt.close()
 
 def plot_distance_F1(testsets, distance_dfs, train_F1_txt_path, F1_txt_paths, outpath, model, feature_or_pixel, PCA, threshold, distance_type, class_filter):
@@ -1078,7 +1436,7 @@ def plot_distance_F1(testsets, distance_dfs, train_F1_txt_path, F1_txt_paths, ou
     
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}^{f}$')
     plt.ylabel('F1-score')
     random.seed(100)
     colors = distinctipy.get_colors(len(df.columns.values[6:-1]), pastel_factor=0.7)
@@ -1142,7 +1500,7 @@ def plot_distance_F1_drop_per_class_per_component(testsets, distance_dfs, train_
             continue
         plt.figure(figsize=(10, 10))
         plt.subplot(1, 1, 1)
-        plt.xlabel('Distance to training set')
+        plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}^{f}$')
         plt.ylabel('F1 drop ratio')
         
         for ifeature,c in zip(df.columns.values[6:-1], colors):
@@ -1217,7 +1575,7 @@ def plot_distance_F1_per_class_per_component(testsets, distance_dfs, train_F1_tx
             continue
         plt.figure(figsize=(10, 10))
         plt.subplot(1, 1, 1)
-        plt.xlabel('Distance to training set')
+        plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}^{f}$')
         plt.ylabel('F1-score')
         
         for ifeature,c in zip(df.columns.values[6:-1], colors):
@@ -1287,7 +1645,7 @@ def plot_distance_F1_testset_x(testsets, distance_txt_paths, train_F1_txt_path, 
 
     plt.figure(figsize=(6, 6))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('F1 drop ratio')
     random.seed(100)
     colors = distinctipy.get_colors(len(testsets), pastel_factor=0.7)
@@ -1304,7 +1662,7 @@ def plot_distance_F1_testset_x(testsets, distance_txt_paths, train_F1_txt_path, 
 
     plt.figure(figsize=(6, 6))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('F1-score')
     for x, y, c, l in zip(df.distance, df.F1, colors, testsets):
         plt.scatter(x, y, c=np.array([c]), label=l)
@@ -1337,7 +1695,7 @@ def plot_distance_F1_testset_y(testsets, distance_txt_paths, train_F1_txt_path, 
 
     plt.figure(figsize=(6, 6))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Distributional Distance ' + r'$d_y$')
     plt.ylabel('F1 drop ratio')
     random.seed(100)
     colors = distinctipy.get_colors(len(testsets), pastel_factor=0.7)
@@ -1351,7 +1709,7 @@ def plot_distance_F1_testset_y(testsets, distance_txt_paths, train_F1_txt_path, 
 
     plt.figure(figsize=(6, 6))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Distributional Distance ' + r'$d_y$')
     plt.ylabel('F1-score')
     for x, y, c, l in zip(df.distance, df.F1, colors, testsets):
         plt.scatter(x, y, c=np.array([c]), label=l)
@@ -1363,7 +1721,7 @@ def plot_distance_F1_testset_y(testsets, distance_txt_paths, train_F1_txt_path, 
 
     plt.figure(figsize=(6, 6))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Distributional Distance ' + r'$d_y$')
     plt.ylabel('Accuracy')
     for x, y, c, l in zip(df.distance, df.Acc, colors, testsets):
         plt.scatter(x, y, c=np.array([c]), label=l)
@@ -1375,7 +1733,7 @@ def plot_distance_F1_testset_y(testsets, distance_txt_paths, train_F1_txt_path, 
 
     plt.figure(figsize=(6, 6))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Distributional Distance ' + r'$d_y$')
     plt.ylabel('Accuracy drop ratio')
     for x, y, c, l in zip(df.distance, df.Acc_drop, colors, testsets):
         plt.scatter(x, y, c=np.array([c]), label=l)
@@ -1405,7 +1763,7 @@ def plot_distance_F1_x(testsets, distance_dfs, train_F1_txt_path, F1_txt_paths, 
     
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('F1 drop ratio')
     random.seed(100)
     colors = distinctipy.get_colors(len(df.columns.values[:-2]), pastel_factor=0.7)
@@ -1429,7 +1787,7 @@ def plot_distance_F1_x(testsets, distance_dfs, train_F1_txt_path, F1_txt_paths, 
 
     plt.figure(figsize=(12, 12))
     plt.subplot(1, 1, 1)
-    plt.xlabel('Distance to training set')
+    plt.xlabel('Hellinger distance ' + r'$D_\mathcal{H}$')
     plt.ylabel('F1-score')
     for ifeature, c in zip(df.columns.values[:-2], colors):
         plt.scatter(df[ifeature], df.F1, c=np.array([c]), alpha=0.3)
